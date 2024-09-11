@@ -1,0 +1,20 @@
+// led.h 文件
+#ifndef __LED_H__
+#define __LED_H__
+
+#include <Arduino.h>
+#include <FastLED.h>
+
+
+#define LED_PIN     25     // 定义连接到WS2812B的数据引脚
+#define NUM_LEDS    2   // 定义LED的数量
+#define BRIGHTNESS  30    // 定义亮度
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
+
+extern CRGB leds[];
+extern void led_rainbow(void);
+extern void led_init(void);
+extern void led_close(void);
+
+#endif

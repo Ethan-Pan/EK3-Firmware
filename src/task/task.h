@@ -1,0 +1,15 @@
+#ifndef __TASK_H__
+#define __TASK_H__
+
+#include <Arduino.h>
+#include "motor/motor.h"
+#include "LED/led.h"
+#include "interface/interface.h"
+#include "ui.h"
+#include "ui_helpers.h"
+#include "ui_events.h"
+#include "common/common.h"
+
+extern void task_init(void);
+
+#endif
