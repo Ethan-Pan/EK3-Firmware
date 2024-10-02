@@ -3,13 +3,18 @@
 #define __FINGER_H__
 
 #include "Arduino.h"
-#include <cstring>
+// #include <Adafruit_Fingerprint.h>
+#include <SoftwareSerial.h>
+#include "yfrobot_fpm383.h"
+#include "common/common.h"
 
-extern int gFingerISRFlag;
+extern void finger_init(void);
+extern int8_t finger_enroll(void);
+extern int8_t finger_delete(uint16_t id);
+extern int8_t finger_empty(void);
+extern int8_t finger_identify(void);
+uint8_t finger_inquiry(void);
 
-extern void fingerInit(int touchPin);
-extern void autoEnroll(void);
-extern void autoIdentify(void);
-extern void openSleep(void);
-extern void xTaskFinger(void *pt);
+extern void test_finger(void);
+
 #endif

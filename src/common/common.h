@@ -18,6 +18,9 @@ typedef struct {
     int flag_timer_rst;
     int flag_led;
     int flag_motor;
+    /* fingers ID */
+    int finger_count;
+    int finger_id_buffer[10];
 
 } GlobalDataStru;
 

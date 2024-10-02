@@ -7,280 +7,153 @@
  * *************************************************/
 
 #include "Finger.h"
-#include "esp_task_wdt.h"
 
-#define FINGER_TOUCH_PIN 14
+#define FINGERPRINT_TEMPLATE_MAX 10
 
-static byte autoEnrollCommand[17] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x08, 0x31, 0x00, 0x01, 0x06, 0x00, 0x2E, 0x00, 0x6F}; // 自动注册命令, 手指按住不放就可以完成注册
-static byte autoIdentifyCommand[17] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x08, 0x32, 0x02, 0x00, 0x01, 0x00, 0x06, 0x00, 0x44}; // 自动验证命令
-static byte ledSuccessCommand[16] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x07, 0x3C, 0x02, 0x02, 0x02, 0x01, 0x00, 0x4B}; // 验证成功等效：闪烁1次绿灯
-static byte ledFailedCommand[16] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x07, 0x3C, 0x02, 0x04, 0x04, 0x01, 0x00, 0x4F}; // 验证失败灯效：闪烁1次红灯
-static byte ledIdentifyCommand[16] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x07, 0x3C, 0x02, 0x01, 0x01, 0x01, 0x00, 0x49}; // 每验证一次灯效：闪烁1次蓝灯
-static byte sleepCommand[12] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01, 0x00, 0x03, 0x33, 0x00, 0x37};   // 休眠模式，开启休眠之后才能使用touchID
-static uint8_t gReceiveBuffer[128];   //串口接收数据的临时缓冲数组
+void finger_init();
+int8_t finger_enroll();
+int8_t finger_delete(uint16_t id);
+int8_t finger_empty();
+int8_t finger_identify();
+uint8_t finger_inquiry();
 
-static void ledSuccess(void);
-static void ledFailed(void);
-static void ledIdentify(void);
-static void receiveData(uint16_t timeOut);
-static void sendCommd(byte* buffer, int len);
-static void cleanUartBuffer(void);
-static void delay_ms(long int ms);
-void IRAM_ATTR pin_ISR(void);
+void test_finger();
 
-int gFingerISRFlag = 0;
-int gCount = 0;
+// 定义软件串口的引脚
+#define FPM_RX 25
+#define FPM_TX 26
 
-// 子任务：等待手指按下，自动识别然后休眠
-void xTaskFinger(void *pt){
-  while (1)
-  {
-    if(gFingerISRFlag == 1){
-        vTaskDelay(100);
-        if(digitalRead(FINGER_TOUCH_PIN) == HIGH){
-            gCount += 1;
-            if(gCount==2){
-                gCount = 0;
-                Serial.println("xTaskFinger");
-                ledSuccess();
-                openSleep(); 
-            }
-            gFingerISRFlag = 0;
-            pinMode(FINGER_TOUCH_PIN, OUTPUT);
-            digitalWrite(FINGER_TOUCH_PIN, LOW);
-            attachInterrupt(digitalPinToInterrupt(FINGER_TOUCH_PIN), pin_ISR, RISING);
-            pinMode(FINGER_TOUCH_PIN, INPUT);
-        }
-    }
-    vTaskDelay(10);
+// 创建软件串口对象
+YFROBOTFPM383 fpm(FPM_RX, FPM_TX);
+int flag_enroll = 0;
+
+void finger_init(){
+  // 初始化
+  while (fpm.getChipSN() == "") {
+    Serial.println("waiting for finger init......");
+    delay(200);  //等待指纹识别模块初始化完成
   }
+  Serial.println(fpm.getChipSN());
 }
 
-// 初始化
-void fingerInit(int touchPin){
-    Serial.begin(115200);
-    Serial2.begin(57600, SERIAL_8N1, 16, 17);
-    pinMode(touchPin, INPUT_PULLDOWN);
-    delay_ms(200);  // finger模块启动延时
-    openSleep();  // 开机自启休眠模式
-    delay_ms(200); 
-    attachInterrupt(digitalPinToInterrupt(touchPin), pin_ISR, RISING);
-}
 
-// 自动注册函数
-void autoEnroll(){
-    sendCommd(autoEnrollCommand, sizeof(autoEnrollCommand));
-    receiveData(10000);
-    if(gReceiveBuffer[6] == 0x07 && gReceiveBuffer[9] == 0x00){
-        ledSuccess();
-    }
-}
-
-// 自动验证
-void autoIdentify(){
-    sendCommd(autoIdentifyCommand, sizeof(autoIdentifyCommand));
-    receiveData(5000);
-    if(gReceiveBuffer[6] == 0x07 && gReceiveBuffer[9] == 0x00){ // 匹配到指纹
-        ledSuccess();
-    }
-    else if(gReceiveBuffer[6] == 0x07 && gReceiveBuffer[9] == 0x09){ // 未匹配到指纹
-        ledFailed();
-    }
-}
-
-static void sendCommd(byte* buffer, int len){
-    memset(gReceiveBuffer, 0, sizeof(gReceiveBuffer));
-    Serial2.write(buffer, len);
-    Serial2.flush();
-}
-
-static void receiveData(uint16_t timeOut){
-    uint8_t i = 0;
-    while(Serial2.available()==0 && (--timeOut)){
-        delay(1);
-    }
-    while(Serial2.available() > 0){
-        delay(2);
-        gReceiveBuffer[i++] = Serial2.read();
-        Serial.print(gReceiveBuffer[i-1], HEX);
-        Serial.print(" ");
-    }
-}
-
-// 开启休眠模式
-void openSleep(){
-    sendCommd(sleepCommand, sizeof(sleepCommand));
-    receiveData(2000);
-}
-
-// 闪烁两次绿灯
-static void ledSuccess(){
-    sendCommd(ledSuccessCommand, sizeof(ledSuccessCommand));
-    receiveData(2000);
-}
-
-// 闪烁两次红灯
-static void ledFailed(){
-    sendCommd(ledFailedCommand, sizeof(ledFailedCommand));
-    receiveData(2000);
-}
-
-// 闪烁一次蓝灯
-static void ledIdentify(){
-    sendCommd(ledIdentifyCommand, sizeof(ledIdentifyCommand));
-    receiveData(2000);
-}
-
-static void delay_ms(long int ms){
-  for(int i=0;i<ms;i++)
-  {
-    delayMicroseconds(1000);
-  }
-}
-
-void IRAM_ATTR pin_ISR(){
-    detachInterrupt(digitalPinToInterrupt(FINGER_TOUCH_PIN));
-    Serial.println("INTERRUPT");
-    // delay_ms(10);
-    gFingerISRFlag += 1;
-}
-
-// void setup(){
-//     fingerInit(FINGER_TOUCH_PIN);
-//     esp_task_wdt_init(10, true); // 参数：超时时间（秒），是否触发panic处理
-//     // 将当前任务（通常是loop任务）添加到看门狗监控列表
-//     esp_task_wdt_add(NULL); // 参数：NULL表示当前任务
-//     xTaskCreate(xTaskFinger, "your name", 1024*4, NULL, 1, NULL);
-// }
-
-// void loop(){
-//     esp_task_wdt_reset();
-//     vTaskDelay(10);
-// }
-
-/* arduino 库版本 */
-
-#include <Adafruit_Fingerprint.h>
-
-
-int getFingerprintIDez();
-void registerFingerprint();
-int findEmptyID();
-// 创建一个串口对象
-// SoftwareSerial mySerial(2, 3); // RX, TX
-#define mySerial Serial2
-// 使用串口对象初始化指纹传感器
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
-
-// void setup() {
-//   Serial.begin(115200);
-//   while (!Serial);  // 对于一些需要串口连接的Arduino板，等待串口连接
-//   Serial.println("指纹传感器测试");
-
-//   finger.begin(57600);  // 指纹传感器的默认波特率为57600
-//   if (finger.verifyPassword()) {
-//     Serial.println("指纹传感器已找到");
-//   } else {
-//     Serial.println("指纹传感器未找到，请检查连接");
-//     while (1) { delay(1); }
-//   }
-//   if (finger.emptyDatabase() == FINGERPRINT_OK) {
-//     Serial.println("成功清除所有指纹！");
-//   } else {
-//     Serial.println("清除指纹失败！");
-//   }
-// }
-
-// void loop() {
-//   int result = getFingerprintIDez();
-//   delay(50);  // 稍作延迟，避免过快重复读取
-// }
-
-int getFingerprintIDez() {
-  uint8_t p = finger.getImage();
-  switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("图像采集成功");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.println("等待手指...");
-      return -1;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("通信错误");
-      return -1;
-    case FINGERPRINT_IMAGEFAIL:
-      Serial.println("图像采集失败");
-      return -1;
-    default:
-      Serial.println("未知错误");
-      return -1;
-  }
-  
-  p = finger.image2Tz();
-  if (p != FINGERPRINT_OK) {
-    Serial.println("图像转换失败");
+// finger enroll
+int8_t finger_enroll(){
+  if(globalData.finger_count >= FINGERPRINT_TEMPLATE_MAX){
+    Serial.println("the finger buffer is full, please remove!");
     return -1;
   }
   
-  p = finger.fingerSearch(1);
-  if (p == FINGERPRINT_OK) {
-    Serial.println("找到匹配的指纹");
-    Serial.print("ID #"); Serial.println(finger.fingerID);
-    Serial.print("置信度: "); Serial.println(finger.confidence);
-    return finger.fingerID;
-  } else if (p == FINGERPRINT_NOTFOUND) {
-    Serial.println("未找到匹配的指纹，准备注册为新指纹...");
-    registerFingerprint();
+  uint16_t cur_id = 0;
+  for(int i = 0; i < FINGERPRINT_TEMPLATE_MAX; i++){
+    if(globalData.finger_id_buffer[i] == 0){
+      cur_id = i;
+      // start to enroll
+      Serial.println("Please pull your finger to the sensor 4 times in 30 seconds.");
+      Serial.printf("The cur count is:%d\n", globalData.finger_count);
+      Serial.printf("The next enroll id is:%d\n", cur_id);
+      flag_enroll = fpm.enroll(cur_id, 4);
+      if (flag_enroll == 0x00) {
+        Serial.println("finger enroll success!");
+        globalData.finger_count += 1;
+        globalData.finger_id_buffer[i] = 1;
+        return 1;
+      }else{
+        Serial.println("finger already exist!");
+        return -1;
+      }
+    }
+  }
+  return -2;
+}
+
+// finger delete
+int8_t finger_delete(uint16_t id){
+  if(id == 0xff){  // delete the first finger
+    for(int i = 0; i < FINGERPRINT_TEMPLATE_MAX; i++){
+      if(globalData.finger_id_buffer[i] == 1){
+        return finger_delete(i);
+      }
+    }
+  }
+
+  uint8_t flag_delete = fpm.deleteID(id);
+  if(flag_delete != 0x00){
+    Serial.printf("Fail to delete finger %d!", id);
     return -1;
-  } else {
-    Serial.println("搜索指纹失败");
-    registerFingerprint();
-    return -1;
+  }else{
+    Serial.printf("Success to delete finger %d!", id);
+    globalData.finger_count -= 1;
+    globalData.finger_id_buffer[id] = 0;
+    return 1;
   }
 }
 
-void registerFingerprint() {
-  // 注意：注册新指纹的过程比较复杂，需要采集两次指纹并生成模板，然后存储模板
-  // 这里仅提供一个简化的概念性实现步骤，具体实现可能需要根据指纹模块的说明书来完成
-  
-  Serial.println("请放上手指...");
-  while (finger.getImage() != FINGERPRINT_OK);  // 等待手指放上
-  
-  if (finger.image2Tz(1) != FINGERPRINT_OK) {  // 生成特征图1
-    return;
+// finger empty
+int8_t finger_empty(){
+  uint8_t flag_empty = fpm.empty();
+  if(flag_empty == 0x00){
+    Serial.println("Success to empty finger buffer!");
+    globalData.finger_count = 0;
+    memset(globalData.finger_id_buffer, 0, FINGERPRINT_TEMPLATE_MAX * sizeof(int));
+    return 1;
+  }else{
+    Serial.println("Fail to empty finger buffer!");
+    return -1;  
   }
-  
-  Serial.println("请再次放上手指...");
-  while (finger.getImage() != FINGERPRINT_OK);  // 等待手指再次放上
-  
-  if (finger.image2Tz(2) != FINGERPRINT_OK) {  // 生成特征图2
-    return;
-  }
-  
-  if (finger.createModel() != FINGERPRINT_OK) {  // 合并特征图生成模板
-    Serial.println("创建模板失败");
-    return;
-  }
-  
-//   int id = findEmptyID();  // 查找空闲的ID位置
-    int id = 1;
-  if (id < 0) {
-    Serial.println("没有找到空闲的ID位置");
-    return;
-  }
-  
-  if (finger.storeModel(id) != FINGERPRINT_OK) {  // 存储模板
-    Serial.println("模板存储失败"); return; }
+}
 
-    Serial.print("模板成功存储在ID #"); 
-    Serial.println(id); }
+// finger identify
+int8_t finger_identify(){
+  /*验证指纹工作流程：
+        1、无手指时，闪烁红绿色（黄色）灯一次
+        2、搜索到未认证手指指纹，闪烁红色灯两次
+        3、搜索未认证手指指纹，解析并校验数据，正常则返回指纹ID，并闪烁绿灯两次
+  */
+  uint8_t id = fpm.identify(false);  //验证指纹并获取指纹ID，参数true 在无手指状态是否有LED灯提示，您可以false关掉指示灯
+  if(id < FINGERPRINT_TEMPLATE_MAX){
+    Serial.printf("finger pass!");
+    return 1;
+  }
+  if(id == 0xFF){
+    Serial.printf("finger no pass!");
+    return -1;
+  }  
+  return -1;
+}
 
-int findEmptyID() { // 查找空闲的ID位置，这里简化处理，实际应用中可能需要根据你的指纹模块存储容量调整 
-for (int page_id = 0; page_id < 127; page_id++) { // 假设最大ID为127
-    uint8_t p = finger.loadModel(page_id); // 尝试加载指定ID的模型
-    if (p == FINGERPRINT_NOFINGER) { // 检查是否未找到指纹
-      return page_id; // 返回空闲的ID
+// finger inquiry
+uint8_t finger_inquiry(){
+  uint8_t finger_enroll_num = fpm.inquiry();
+  if(finger_enroll_num != globalData.finger_count){
+    Serial.printf("[err]finger enroll nums not match!");
+  }else{
+    Serial.printf("finger enroll nums is:%d", finger_enroll_num);
+  }
+  return finger_enroll_num;
+}
+
+void test_finger(){
+  while (Serial.available() > 0) { // 检查是否有数据可读
+    int input = Serial.parseInt(); // 读取整数数据
+      switch (input) {
+        case 1:
+          finger_enroll();
+          break;
+        case 2:
+          finger_delete(0xff);
+          break;
+        case 3:
+          finger_empty();
+          break;
+        case 4:
+          finger_identify();
+          break;
+        case 5:
+          finger_inquiry();
+          break;
+        default:
+          Serial.println("Uart Input Err!");
     }
   }
-  return -1; // 如果所有ID都被占用，返回-1
 }

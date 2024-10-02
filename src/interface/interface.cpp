@@ -34,16 +34,26 @@ static void read_json(){
   gJsonData.time_hour = doc["time_hour"];
   gJsonData.time_min = doc["time_min"];
   gJsonData.time_sec = doc["time_sec"];
+  globalData.cur_time_hour = gJsonData.time_hour;
+  globalData.cur_time_min = gJsonData.time_min;
+  globalData.cur_time_sec = gJsonData.time_sec;
 
 }
 
 static void upDate_json(){
   /* time update */
-  gSecAngle = gJsonData.time_sec * 60;
-  gMinAngle = gJsonData.time_min * 60 + gJsonData.time_sec;
-  gHourAngle = (gJsonData.time_hour - 12) * 300 + gJsonData.time_min * 5;
-//   lv_img_set_angle(ui_hour, gHourAngle);
-//   lv_img_set_angle(ui_min, gMinAngle);
-//   lv_img_set_angle(ui_sec, gSecAngle);
+  gSecAngle = globalData.cur_time_sec * 60;
+  gMinAngle = globalData.cur_time_min * 60 + globalData.cur_time_sec;
+  gHourAngle = (globalData.cur_time_hour - 12) * 300 + globalData.cur_time_min * 5;
+  lv_img_set_angle(ui_min, gMinAngle);
+  lv_img_set_angle(ui_hour, gHourAngle);
+  lv_img_set_angle(ui_sec, gSecAngle);
+  char time_str[3];
+  sprintf(time_str, "%02d", globalData.cur_time_min);
+  lv_label_set_text(ui_labTimeMin, time_str);
+  sprintf(time_str, "%01d", globalData.cur_time_hour%10);
+  lv_label_set_text(ui_labTimeHour1, time_str);
+  sprintf(time_str, "%01d", globalData.cur_time_hour/10);
+  lv_label_set_text(ui_labTimeHour2, time_str);
 }
 

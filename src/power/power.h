@@ -2,12 +2,16 @@
 #ifndef __POWER_H__
 #define __POWER_H__
 
-#include "Arduino.h"
+#include <Arduino.h>
+#include <esp_adc_cal.h>
+#include <driver/adc.h>
 
-#define SWITCH_PIN 13
-#define MOTOR_PIN 4
-#define BL_PIN 19
+#define POWER_MAX 2530
+#define POWER_MIN 2240
+#define CHARGE_PIN 36
 
-extern void motor_init(void);
+extern void power_init(void);
+extern uint32_t read_power(void);
+extern uint32_t get_charge_state(void);
 
 #endif

@@ -15,11 +15,15 @@ static int seconds_tomato = 0;
 static int count_tomato = 0;
 static int sleep_flag = 0;
 
+static int lastPower = 0;
+
 static void task_switch(void *pt);
 static void task_LED(void *pt);
 static void task_timer(void *pt);
 static void task_tomato(void *pt);
-static void task_watch1(void *pt);
+static void task_watch(void *pt);
+static void task_real_time(void *pt);
+static void task_power(void *pt);
 
 /* task init */
 void task_init(){
@@ -27,7 +31,8 @@ void task_init(){
     xTaskCreate(task_LED, "task_LED", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_timer, "task_timer", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_tomato, "task_tomato", 1024*4, NULL, 1, NULL);
-    xTaskCreate(task_watch1, "task_watch1", 1024*4, NULL, 1, NULL);
+    xTaskCreate(task_watch, "task_watch", 1024*4, NULL, 1, NULL);
+    xTaskCreate(task_power, "task_power", 1024*4, NULL, 1, NULL);
 }
 
 /* switch task */
@@ -42,8 +47,8 @@ static void task_switch(void *pt){
                 if(duration >= 2000){
                     digitalWrite(BL_PIN, LOW);
                     led_close();
-                    // switch_to_black_screen();
-                    vTaskDelay(2000);
+                    switch_to_black_screen();
+                    vTaskDelay(5000);
                     sleep_flag = 1;
                     globalData.flag_motor = 0;
                     esp_deep_sleep_start(); // 进入深度睡眠
@@ -75,7 +80,8 @@ static void task_switch(void *pt){
 }
 
 /* LVGL Watch 1 task */
-static void task_watch1(void *pt){
+static void task_watch(void *pt){
+    char time_str[3];
     while (1)
     {
         gSecAngle += 3;
@@ -85,16 +91,35 @@ static void task_watch1(void *pt){
             gHourAngle += 5;
             lv_img_set_angle(ui_min, gMinAngle);
             lv_img_set_angle(ui_hour, gHourAngle);
+            globalData.cur_time_min += 1;
+            sprintf(time_str, "%02d", globalData.cur_time_min);
+            lv_label_set_text(ui_labTimeMin, time_str);
         }
         if(gMinAngle >= 3600){
             gMinAngle = 0;
             lv_img_set_angle(ui_min, gMinAngle);
+            globalData.cur_time_min = 0;
+            sprintf(time_str, "%02d", globalData.cur_time_min);
+            lv_label_set_text(ui_labTimeMin, time_str);
+            globalData.cur_time_hour += 1;
+            sprintf(time_str, "%01d", globalData.cur_time_hour%10);
+            lv_label_set_text(ui_labTimeHour1, time_str);
+            sprintf(time_str, "%01d", globalData.cur_time_hour/10);
+            lv_label_set_text(ui_labTimeHour2, time_str);
         }
         if(gHourAngle >= 3600){
             gHourAngle = 0;
             lv_img_set_angle(ui_hour, gHourAngle);
+            sprintf(time_str, "%02d", globalData.cur_time_hour);
+            lv_label_set_text(ui_labTimeMin, time_str);
+            globalData.cur_time_hour = 0;
+            sprintf(time_str, "%01d", globalData.cur_time_hour%10);
+            lv_label_set_text(ui_labTimeHour1, time_str);
+            sprintf(time_str, "%01d", globalData.cur_time_hour/10);
+            lv_label_set_text(ui_labTimeHour2, time_str);
         }        
         lv_img_set_angle(ui_sec, gSecAngle);
+        lv_img_set_angle(ui_sec_dot, gSecAngle);
         vTaskDelay(50);
     }
     
@@ -206,5 +231,35 @@ static void task_tomato(void *pt){
             lv_arc_set_value(ui_arcTomato, (int16_t)time_count);
         }
         vTaskDelay(20);
+    }
+}
+
+/* power task */
+static void task_power(void *pt){
+    while (1){
+        char time_str[5];
+        int power = 0;
+        uint32_t voltage = read_power();
+        uint32_t voltage2 = get_charge_state();
+        if(voltage >= POWER_MAX){
+            power = 100;
+            lv_label_set_text(ui_labPower, "100%");
+        }
+        else if(voltage <= POWER_MIN){
+            power = 0;
+            lv_label_set_text(ui_labPower, "0%");
+        }
+        else{
+            power = (voltage-POWER_MIN) * 100 / (POWER_MAX-POWER_MIN);
+            sprintf(time_str, "%02d", power);
+            time_str[2] = '%';
+            time_str[3] = '\0';
+            lv_label_set_text(ui_labPower, time_str);
+        }
+        sprintf(time_str, "%04d", voltage);
+        lv_label_set_text(ui_labDate, time_str);
+        sprintf(time_str, "%04d", voltage2);
+        lv_label_set_text(ui_labWeek, time_str);
+        vTaskDelay(1000);  
     }
 }

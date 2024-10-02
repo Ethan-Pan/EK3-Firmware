@@ -464,9 +464,6 @@ void ui_event_scrWatch2(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_SCREEN_LOADED) {
-        sec_Animation(ui_sec_dot, 0);
-    }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
         _ui_screen_change(&ui_scrMenu, LV_SCR_LOAD_ANIM_MOVE_LEFT, 50, 0, &ui_scrMenu_screen_init);

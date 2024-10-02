@@ -4,6 +4,9 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "common/common.h"
+#include "ui.h"
+
 
 
 extern int16_t gSecAngle;

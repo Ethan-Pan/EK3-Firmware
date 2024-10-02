@@ -53,7 +53,6 @@ void dis_init(){
         Serial.printf("buf2 PSRAM failed!");
     }
     tft.init();         //初始化
-    //tft.initDMA();
     tft.setRotation(0); //屏幕旋转方向（横向）
     touch.begin();
     lv_init();
