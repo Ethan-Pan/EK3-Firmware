@@ -9,6 +9,7 @@
 #include "Finger.h"
 
 #define FINGERPRINT_TEMPLATE_MAX 10
+#define PIN_FINGER_TOUCH 14
 
 void finger_init();
 int8_t finger_enroll();
@@ -16,28 +17,42 @@ int8_t finger_delete(uint16_t id);
 int8_t finger_empty();
 int8_t finger_identify();
 uint8_t finger_inquiry();
+void finger_sleep();
+static void interrupt_finger_handler();
 
 void test_finger();
 
-// 定义软件串口的引脚
+/* soft uart port */ 
 #define FPM_RX 25
 #define FPM_TX 26
 
-// 创建软件串口对象
 YFROBOTFPM383 fpm(FPM_RX, FPM_TX);
 int flag_enroll = 0;
 
 void finger_init(){
-  // 初始化
   while (fpm.getChipSN() == "") {
     Serial.println("waiting for finger init......");
     delay(200);  //等待指纹识别模块初始化完成
   }
   Serial.println(fpm.getChipSN());
+  
+  /* interrupt to touch out */ 
+  pinMode(PIN_FINGER_TOUCH, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH), interrupt_finger_handler, RISING);
 }
 
+static void interrupt_finger_handler(){
+  /* close interrupt */ 
+  detachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH));
+  /* fianger identify */
+  int8_t finger_flag = finger_identify();
 
-// finger enroll
+  delay(200);
+  finger_sleep();
+  attachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH), interrupt_finger_handler, RISING);
+}
+
+/* finger enroll */ 
 int8_t finger_enroll(){
   if(globalData.finger_count >= FINGERPRINT_TEMPLATE_MAX){
     Serial.println("the finger buffer is full, please remove!");
@@ -48,7 +63,7 @@ int8_t finger_enroll(){
   for(int i = 0; i < FINGERPRINT_TEMPLATE_MAX; i++){
     if(globalData.finger_id_buffer[i] == 0){
       cur_id = i;
-      // start to enroll
+      /* start to enroll */ 
       Serial.println("Please pull your finger to the sensor 4 times in 30 seconds.");
       Serial.printf("The cur count is:%d\n", globalData.finger_count);
       Serial.printf("The next enroll id is:%d\n", cur_id);
@@ -67,9 +82,10 @@ int8_t finger_enroll(){
   return -2;
 }
 
-// finger delete
+/* finger delete function */ 
 int8_t finger_delete(uint16_t id){
-  if(id == 0xff){  // delete the first finger
+  /* delete the first finger */ 
+  if(id == 0xff){  
     for(int i = 0; i < FINGERPRINT_TEMPLATE_MAX; i++){
       if(globalData.finger_id_buffer[i] == 1){
         return finger_delete(i);
@@ -89,7 +105,7 @@ int8_t finger_delete(uint16_t id){
   }
 }
 
-// finger empty
+/* finger empty function */ 
 int8_t finger_empty(){
   uint8_t flag_empty = fpm.empty();
   if(flag_empty == 0x00){
@@ -103,7 +119,7 @@ int8_t finger_empty(){
   }
 }
 
-// finger identify
+/* finger identify function */ 
 int8_t finger_identify(){
   /*验证指纹工作流程：
         1、无手指时，闪烁红绿色（黄色）灯一次
@@ -122,7 +138,7 @@ int8_t finger_identify(){
   return -1;
 }
 
-// finger inquiry
+/* finger inquiry function */
 uint8_t finger_inquiry(){
   uint8_t finger_enroll_num = fpm.inquiry();
   if(finger_enroll_num != globalData.finger_count){
@@ -131,6 +147,11 @@ uint8_t finger_inquiry(){
     Serial.printf("finger enroll nums is:%d", finger_enroll_num);
   }
   return finger_enroll_num;
+}
+
+/* finger sleep function */
+void finger_sleep(){
+  fpm.sleep();
 }
 
 void test_finger(){
