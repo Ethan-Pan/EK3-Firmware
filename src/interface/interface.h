@@ -15,10 +15,10 @@ extern int16_t gHourAngle;
 
 typedef struct {
     /* weather */
-    float temp_cur;
-    float temp_max;
-    float temp_min;
-    float weather_hum;
+    int temp_cur;
+    int temp_max;
+    int temp_min;
+    int weather_hum;
     int weather_type;
     /* time */
     int time_hour;
@@ -28,6 +28,12 @@ typedef struct {
     int date_week;
     int date_month;
     int date_day;
+    /* location */
+    char location[20];
+    /* LED */
+    int led_state;
+    /* information */
+    char user_name[20];
 } JsonDataStru;
 
 extern JsonDataStru gJsonData;

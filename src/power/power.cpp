@@ -15,12 +15,13 @@ void power_init(){
     pinMode(CHARGE_PIN, INPUT);
     adc1_config_width(ADC_WIDTH);  // 设置ADC为12位宽度
     adc1_config_channel_atten(ADC_PIN, ADC_ATTEN);  // 配置ADC通道为11dB衰减器
-
     adc1_config_channel_atten(ADC1_CHANNEL_0, ADC_ATTEN); 
 
     // 使用eFuse校准ADC，并获取校准值
     adc_chars = (esp_adc_cal_characteristics_t *) malloc(sizeof(esp_adc_cal_characteristics_t));
     esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN, ADC_WIDTH, DEFAULT_VREF, adc_chars);
+    // 使能外部0引脚唤醒
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0); 
 }
 
 uint32_t read_power(){

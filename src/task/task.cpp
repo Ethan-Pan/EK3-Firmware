@@ -24,6 +24,8 @@ static void task_tomato(void *pt);
 static void task_watch(void *pt);
 static void task_real_time(void *pt);
 static void task_power(void *pt);
+static void task_finger(void *pt);
+static void task_encoder(void *pt);
 
 /* task init */
 void task_init(){
@@ -33,6 +35,8 @@ void task_init(){
     xTaskCreate(task_tomato, "task_tomato", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_watch, "task_watch", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_power, "task_power", 1024*4, NULL, 1, NULL);
+    xTaskCreate(task_finger, "task_finger", 1024*4, NULL, 1, NULL);
+    xTaskCreate(task_encoder, "task_encoder", 1024*4, NULL, 1, NULL);
 }
 
 /* switch task */
@@ -128,11 +132,35 @@ static void task_watch(void *pt){
 /* LVGL LED task */
 static void task_LED(void *pt){
     while(1){
-        // 调用彩虹函数
-        if(globalData.flag_led == 0){
+        switch (globalData.led_mode)
+        {
+        case 0:
+            led_close();
+            break;
+        case 1:
+            led_breath();
+            break;
+        case 2:
+            led_stay();
+            break;
+        case 3:
             led_rainbow();
+            break;
+        case 4:
+            led_sky();
+            break;
+        case 5:
+            led_wave();
+            break;
+        default:
+            led_close();
+            break;
         }
-        vTaskDelay(20);
+        gHue++;
+        if(gHue >= 255){
+            gHue = 0;
+        }
+        vTaskDelay(10);
     }
     
 }
@@ -240,26 +268,121 @@ static void task_power(void *pt){
         char time_str[5];
         int power = 0;
         uint32_t voltage = read_power();
-        uint32_t voltage2 = get_charge_state();
-        if(voltage >= POWER_MAX){
-            power = 100;
-            lv_label_set_text(ui_labPower, "100%");
+        int voltage_state = get_charge_state() > 1500? 1:0;
+
+        /* no charge state */
+        if(voltage_state == 0){ 
+            /* init the last power value */
+            if(globalData.last_nocharge_value == 0){
+                globalData.last_nocharge_value = voltage;
+            }
+            /* charge state change */
+            if(globalData.flag_power == 2){
+                lv_obj_add_flag(ui_imgCharge, LV_OBJ_FLAG_HIDDEN);
+                vTaskDelay(100);  
+                globalData.flag_power = 1;
+                globalData.voltage_bias = voltage - globalData.last_charge_value;
+                voltage -= globalData.voltage_bias;
+            }else{
+                voltage -= globalData.voltage_bias;
+                globalData.voltage_bias -= globalData.voltage_bias/globalData.change_stay_count;
+                if(voltage >= globalData.last_nocharge_value){
+                    voltage = globalData.last_nocharge_value;
+                }
+            }
+            globalData.last_nocharge_value = voltage;
+            globalData.flag_power = 1;
         }
-        else if(voltage <= POWER_MIN){
-            power = 0;
-            lv_label_set_text(ui_labPower, "0%");
+        /* charge state */
+        else{
+            /* init the last power value */
+            if(globalData.last_charge_value == 0){
+                globalData.last_charge_value = voltage;
+            }
+            /* charge state change */
+            if(globalData.flag_power == 1){
+                lv_obj_clear_flag(ui_imgCharge, LV_OBJ_FLAG_HIDDEN);
+                vTaskDelay(100);  
+                globalData.flag_power = 2;
+                globalData.voltage_bias = voltage - globalData.last_nocharge_value;
+                voltage -= globalData.voltage_bias;
+            }else{
+                voltage -= globalData.voltage_bias;
+                globalData.voltage_bias -= globalData.voltage_bias/globalData.change_stay_count;
+                if(voltage <= globalData.last_charge_value){
+                    voltage = globalData.last_charge_value;
+                }
+            }
+            globalData.last_charge_value = voltage;
+            globalData.flag_power = 2;
+        }
+
+        if(voltage >= POWER_MAX){
+                power = 100;
+                lv_label_set_text(ui_labPower, "100%");
+            }
+            else if(voltage <= POWER_MIN){
+                power = 0;
+                lv_label_set_text(ui_labPower, "0%");
+            }
+            else{
+                power = (voltage-POWER_MIN) * 100 / (POWER_MAX-POWER_MIN);
+                
+                sprintf(time_str, "%02d", power);
+                time_str[2] = '%';
+                time_str[3] = '\0';
+                lv_label_set_text(ui_labPower, time_str);
+        }
+        if(power < 20){
+            lv_obj_set_style_text_color(ui_labPower, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
         }
         else{
-            power = (voltage-POWER_MIN) * 100 / (POWER_MAX-POWER_MIN);
-            sprintf(time_str, "%02d", power);
-            time_str[2] = '%';
-            time_str[3] = '\0';
-            lv_label_set_text(ui_labPower, time_str);
+            lv_obj_set_style_text_color(ui_labPower, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
         }
-        sprintf(time_str, "%04d", voltage);
-        lv_label_set_text(ui_labDate, time_str);
-        sprintf(time_str, "%04d", voltage2);
-        lv_label_set_text(ui_labWeek, time_str);
+        // sprintf(time_str, "%04d", voltage);
+        // lv_label_set_text(ui_labDate, time_str);
         vTaskDelay(1000);  
     }
 }
+
+/* finger task */
+static void task_finger(void *pt) {
+    while (1) {
+        if (globalData.flag_finger == 1) {
+            // 认证指纹
+            vTaskDelay(100);
+            if(digitalRead(PIN_FINGER_TOUCH) == HIGH){
+                Serial.println("finger task!");
+                int8_t result = finger_identify();
+                if (result == 1) {
+                    Serial.println("指纹认证成功");
+                } else {
+                    Serial.println("指纹认证失败");
+                }
+                // 放置手指长时间放置多次触发
+                vTaskDelay(1500);
+                // 开启指纹休眠
+                finger_sleep();
+            }
+
+            // 重置标志位
+            globalData.flag_finger = 0;
+            attachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH), interrupt_finger_handler, RISING);
+        }
+        
+        vTaskDelay(10);  // 延时100毫秒
+    }
+}
+
+/* encoder task */
+static void task_encoder(void *pt){
+    while(1){
+        if(globalData.flag_encoder == 1){
+            globalData.flag_encoder = 0;
+            int64_t count = read_encoder_count();
+            Serial.printf("ENCORDER COUNT: %d\n", count);
+        }
+        vTaskDelay(10);
+    }
+}
+

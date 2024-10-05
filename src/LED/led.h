@@ -6,7 +6,7 @@
 #include <FastLED.h>
 
 
-#define LED_PIN     25     // 定义连接到WS2812B的数据引脚
+#define LED_PIN     12     // 定义连接到WS2812B的数据引脚
 #define NUM_LEDS    2   // 定义LED的数量
 #define BRIGHTNESS  30    // 定义亮度
 #define LED_TYPE    WS2812B
@@ -16,5 +16,10 @@ extern CRGB leds[];
 extern void led_rainbow(void);
 extern void led_init(void);
 extern void led_close(void);
+extern void led_sky(void);
+extern void led_breath(void);
+extern void led_wave(void);
+extern void led_stay(void);
+extern uint8_t gHue;
 
 #endif

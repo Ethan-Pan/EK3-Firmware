@@ -121,24 +121,24 @@ void ui_scrLight_screen_init(void)
     lv_label_set_text(ui_Label13, "呼吸效果");
     lv_obj_set_style_text_font(ui_Label13, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_PalLightFluid = lv_obj_create(ui_Panel8);
-    lv_obj_set_width(ui_PalLightFluid, lv_pct(88));
-    lv_obj_set_height(ui_PalLightFluid, lv_pct(25));
-    lv_obj_set_x(ui_PalLightFluid, -1);
-    lv_obj_set_y(ui_PalLightFluid, -30);
-    lv_obj_set_align(ui_PalLightFluid, LV_ALIGN_CENTER);
-    lv_obj_set_flex_flow(ui_PalLightFluid, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(ui_PalLightFluid, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_clear_flag(ui_PalLightFluid, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_radius(ui_PalLightFluid, 18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_PalLightFluid, lv_color_hex(0x101410), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_PalLightFluid, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_color(ui_PalLightFluid, lv_color_hex(0x2BD1EE), LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_opa(ui_PalLightFluid, 255, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_width(ui_PalLightFluid, 25, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_spread(ui_PalLightFluid, 0, LV_PART_MAIN | LV_STATE_PRESSED);
+    ui_PalLightStay = lv_obj_create(ui_Panel8);
+    lv_obj_set_width(ui_PalLightStay, lv_pct(88));
+    lv_obj_set_height(ui_PalLightStay, lv_pct(25));
+    lv_obj_set_x(ui_PalLightStay, -1);
+    lv_obj_set_y(ui_PalLightStay, -30);
+    lv_obj_set_align(ui_PalLightStay, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_PalLightStay, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(ui_PalLightStay, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_PalLightStay, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_radius(ui_PalLightStay, 18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_PalLightStay, lv_color_hex(0x101410), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_PalLightStay, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_color(ui_PalLightStay, lv_color_hex(0x2BD1EE), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_opa(ui_PalLightStay, 255, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_width(ui_PalLightStay, 25, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_spread(ui_PalLightStay, 0, LV_PART_MAIN | LV_STATE_PRESSED);
 
-    ui_Image5 = lv_img_create(ui_PalLightFluid);
+    ui_Image5 = lv_img_create(ui_PalLightStay);
     lv_img_set_src(ui_Image5, &ui_img_2_round_solid_png);
     lv_obj_set_width(ui_Image5, LV_SIZE_CONTENT);   /// 24
     lv_obj_set_height(ui_Image5, LV_SIZE_CONTENT);    /// 24
@@ -150,11 +150,11 @@ void ui_scrLight_screen_init(void)
     lv_obj_add_flag(ui_Image5, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image5, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_Label14 = lv_label_create(ui_PalLightFluid);
+    ui_Label14 = lv_label_create(ui_PalLightStay);
     lv_obj_set_width(ui_Label14, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label14, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Label14, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label14, "流水效果");
+    lv_label_set_text(ui_Label14, "常亮效果");
     lv_obj_set_style_text_font(ui_Label14, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_PalLightRainbow = lv_obj_create(ui_Panel8);
@@ -221,24 +221,24 @@ void ui_scrLight_screen_init(void)
     lv_label_set_text(ui_Label17, "星空闪烁");
     lv_obj_set_style_text_font(ui_Label17, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_PalLightFramwork = lv_obj_create(ui_Panel8);
-    lv_obj_set_width(ui_PalLightFramwork, lv_pct(88));
-    lv_obj_set_height(ui_PalLightFramwork, lv_pct(25));
-    lv_obj_set_x(ui_PalLightFramwork, -1);
-    lv_obj_set_y(ui_PalLightFramwork, -30);
-    lv_obj_set_align(ui_PalLightFramwork, LV_ALIGN_CENTER);
-    lv_obj_set_flex_flow(ui_PalLightFramwork, LV_FLEX_FLOW_ROW);
-    lv_obj_set_flex_align(ui_PalLightFramwork, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_clear_flag(ui_PalLightFramwork, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_radius(ui_PalLightFramwork, 18, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_PalLightFramwork, lv_color_hex(0x101410), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_PalLightFramwork, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_shadow_color(ui_PalLightFramwork, lv_color_hex(0x2BD1EE), LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_opa(ui_PalLightFramwork, 255, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_width(ui_PalLightFramwork, 25, LV_PART_MAIN | LV_STATE_PRESSED);
-    lv_obj_set_style_shadow_spread(ui_PalLightFramwork, 0, LV_PART_MAIN | LV_STATE_PRESSED);
+    ui_PalLightWave = lv_obj_create(ui_Panel8);
+    lv_obj_set_width(ui_PalLightWave, lv_pct(88));
+    lv_obj_set_height(ui_PalLightWave, lv_pct(25));
+    lv_obj_set_x(ui_PalLightWave, -1);
+    lv_obj_set_y(ui_PalLightWave, -30);
+    lv_obj_set_align(ui_PalLightWave, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_PalLightWave, LV_FLEX_FLOW_ROW);
+    lv_obj_set_flex_align(ui_PalLightWave, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_PalLightWave, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_radius(ui_PalLightWave, 18, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_PalLightWave, lv_color_hex(0x101410), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_PalLightWave, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_shadow_color(ui_PalLightWave, lv_color_hex(0x2BD1EE), LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_opa(ui_PalLightWave, 255, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_width(ui_PalLightWave, 25, LV_PART_MAIN | LV_STATE_PRESSED);
+    lv_obj_set_style_shadow_spread(ui_PalLightWave, 0, LV_PART_MAIN | LV_STATE_PRESSED);
 
-    ui_Image14 = lv_img_create(ui_PalLightFramwork);
+    ui_Image14 = lv_img_create(ui_PalLightWave);
     lv_img_set_src(ui_Image14, &ui_img_5_round_solid_png);
     lv_obj_set_width(ui_Image14, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Image14, LV_SIZE_CONTENT);    /// 1
@@ -246,11 +246,11 @@ void ui_scrLight_screen_init(void)
     lv_obj_add_flag(ui_Image14, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_Image14, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_Label18 = lv_label_create(ui_PalLightFramwork);
+    ui_Label18 = lv_label_create(ui_PalLightWave);
     lv_obj_set_width(ui_Label18, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label18, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Label18, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label18, "烟花绽放");
+    lv_label_set_text(ui_Label18, "波浪效果");
     lv_obj_set_style_text_font(ui_Label18, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Panel6 = lv_obj_create(ui_Panel8);
@@ -268,10 +268,6 @@ void ui_scrLight_screen_init(void)
     lv_obj_set_style_border_opa(ui_Panel6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_PalLightSetting, ui_event_PalLightSetting, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(ui_PalLightBreath, ui_event_PalLightBreath, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(ui_PalLightFluid, ui_event_PalLightFluid, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(ui_PalLightRainbow, ui_event_PalLightRainbow, LV_EVENT_ALL, NULL);
-    lv_obj_add_event_cb(ui_PalLightSky, ui_event_PalLightSky, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_scrLight, ui_event_scrLight, LV_EVENT_ALL, NULL);
 
 }

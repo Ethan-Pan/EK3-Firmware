@@ -10,7 +10,8 @@
 #include "ui_events.h"
 #include "common/common.h"
 #include "power/power.h"
-
+#include "finger/finger.h"
+#include "encoder/encoder.h"
 extern void task_init(void);
 
 #endif

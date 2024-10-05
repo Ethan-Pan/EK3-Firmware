@@ -5,8 +5,10 @@ lv_obj_t *black_screen;
 
 static void ui_event_timer_init();
 static void ui_event_tomato_init();
+static void ui_event_led_mode_init();
 static void ui_event_scr_timer_click(lv_event_t *e);
 static void ui_event_scr_tomato_click(lv_event_t *e);
+static void ui_event_led_mode_click(lv_event_t *e);
 void create_black_screen(void);
 
 
@@ -14,6 +16,7 @@ void create_black_screen(void);
 void ui_event_init(){
     ui_event_timer_init();
     ui_event_tomato_init();
+    ui_event_led_mode_init();
     create_black_screen();
 }
 
@@ -36,6 +39,16 @@ static void ui_event_tomato_init(){
     // add the event
     lv_obj_add_event_cb(ui_imgTomatoPause, ui_event_scr_tomato_click, LV_EVENT_CLICKED, NULL);
     lv_obj_add_event_cb(ui_imgTomatoStart, ui_event_scr_tomato_click, LV_EVENT_CLICKED, NULL);
+}
+
+/* led mode event init */
+static void ui_event_led_mode_init(){
+    lv_obj_add_event_cb(ui_PalLightBreath, ui_event_led_mode_click, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(ui_PalLightStay, ui_event_led_mode_click, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(ui_PalLightRainbow, ui_event_led_mode_click, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(ui_PalLightSky, ui_event_led_mode_click, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(ui_PalLightWave, ui_event_led_mode_click, LV_EVENT_CLICKED, NULL);
+    lv_obj_add_event_cb(ui_Panel5, ui_event_led_mode_click, LV_EVENT_CLICKED, NULL);
 }
 
 /* timer event function */
@@ -92,4 +105,30 @@ void create_black_screen() {
 /* switch to black screen */
 void switch_to_black_screen() {
     lv_scr_load(black_screen);
+}
+
+/* led mode click event */
+static void ui_event_led_mode_click(lv_event_t *e){
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_CLICKED){
+        if(target == ui_PalLightBreath){
+            globalData.led_mode = 1;
+        }
+        if(target == ui_PalLightStay){
+            globalData.led_mode = 2;
+        }
+        if(target == ui_PalLightRainbow){
+            globalData.led_mode = 3;
+        }
+        if(target == ui_PalLightSky){
+            globalData.led_mode = 4;
+        }
+        if(target == ui_PalLightWave){
+            globalData.led_mode = 5;
+        }
+        if(target == ui_Panel5){
+            globalData.led_mode = 0;
+        }
+    }
 }

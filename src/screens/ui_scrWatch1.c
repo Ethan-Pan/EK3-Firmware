@@ -53,21 +53,21 @@ void ui_scrWatch1_screen_init(void)
     lv_obj_clear_flag(ui_red_bar2, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_img_set_zoom(ui_red_bar2, 157);
 
-    ui_imgCloudy = lv_img_create(ui_scrWatch1);
-    lv_img_set_src(ui_imgCloudy, &ui_img_weather_cloud_png);
-    lv_obj_set_width(ui_imgCloudy, LV_SIZE_CONTENT);   /// 37
-    lv_obj_set_height(ui_imgCloudy, LV_SIZE_CONTENT);    /// 30
-    lv_obj_set_x(ui_imgCloudy, -59);
-    lv_obj_set_y(ui_imgCloudy, -12);
-    lv_obj_set_align(ui_imgCloudy, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_imgCloudy, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
-    lv_obj_clear_flag(ui_imgCloudy, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_img_set_zoom(ui_imgCloudy, 200);
+    ui_imgWatch1Cloudy = lv_img_create(ui_scrWatch1);
+    lv_img_set_src(ui_imgWatch1Cloudy, &ui_img_weather_cloud_png);
+    lv_obj_set_width(ui_imgWatch1Cloudy, LV_SIZE_CONTENT);   /// 37
+    lv_obj_set_height(ui_imgWatch1Cloudy, LV_SIZE_CONTENT);    /// 30
+    lv_obj_set_x(ui_imgWatch1Cloudy, -57);
+    lv_obj_set_y(ui_imgWatch1Cloudy, -12);
+    lv_obj_set_align(ui_imgWatch1Cloudy, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_imgWatch1Cloudy, LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_imgWatch1Cloudy, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_img_set_zoom(ui_imgWatch1Cloudy, 200);
 
     ui_labTemp = lv_label_create(ui_scrWatch1);
     lv_obj_set_width(ui_labTemp, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_labTemp, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_labTemp, -57);
+    lv_obj_set_x(ui_labTemp, -55);
     lv_obj_set_y(ui_labTemp, 15);
     lv_obj_set_align(ui_labTemp, LV_ALIGN_CENTER);
     lv_label_set_text(ui_labTemp, "25°");
@@ -127,6 +127,36 @@ void ui_scrWatch1_screen_init(void)
     lv_img_set_pivot(ui_min, 9, 153);
     lv_img_set_angle(ui_min, 1400);
     lv_img_set_zoom(ui_min, 157);
+
+    ui_imgWatch1Rainy = lv_img_create(ui_scrWatch1);
+    lv_img_set_src(ui_imgWatch1Rainy, &ui_img_dayu_png);
+    lv_obj_set_width(ui_imgWatch1Rainy, LV_SIZE_CONTENT);   /// 30
+    lv_obj_set_height(ui_imgWatch1Rainy, LV_SIZE_CONTENT);    /// 30
+    lv_obj_set_x(ui_imgWatch1Rainy, -59);
+    lv_obj_set_y(ui_imgWatch1Rainy, -12);
+    lv_obj_set_align(ui_imgWatch1Rainy, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_imgWatch1Rainy, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_imgWatch1Rainy, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_imgWatch1Sunny = lv_img_create(ui_scrWatch1);
+    lv_img_set_src(ui_imgWatch1Sunny, &ui_img_981806855);
+    lv_obj_set_width(ui_imgWatch1Sunny, LV_SIZE_CONTENT);   /// 30
+    lv_obj_set_height(ui_imgWatch1Sunny, LV_SIZE_CONTENT);    /// 30
+    lv_obj_set_x(ui_imgWatch1Sunny, -57);
+    lv_obj_set_y(ui_imgWatch1Sunny, -9);
+    lv_obj_set_align(ui_imgWatch1Sunny, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_imgWatch1Sunny, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_imgWatch1Sunny, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_imgWatch1Snow = lv_img_create(ui_scrWatch1);
+    lv_img_set_src(ui_imgWatch1Snow, &ui_img_daxue_png);
+    lv_obj_set_width(ui_imgWatch1Snow, LV_SIZE_CONTENT);   /// 30
+    lv_obj_set_height(ui_imgWatch1Snow, LV_SIZE_CONTENT);    /// 30
+    lv_obj_set_x(ui_imgWatch1Snow, -59);
+    lv_obj_set_y(ui_imgWatch1Snow, -11);
+    lv_obj_set_align(ui_imgWatch1Snow, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_imgWatch1Snow, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_clear_flag(ui_imgWatch1Snow, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     lv_obj_add_event_cb(ui_scrWatch1, ui_event_scrWatch1, LV_EVENT_ALL, NULL);
 

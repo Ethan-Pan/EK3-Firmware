@@ -27,13 +27,6 @@ extern "C" {
 #include "components/ui_comp_hook.h"
 #include "ui_events.h"
 
-void hour_Animation(lv_obj_t * TargetObject, int delay);
-void sec_Animation(lv_obj_t * TargetObject, int delay);
-void min_Animation(lv_obj_t * TargetObject, int delay);
-void fadeon_Animation(lv_obj_t * TargetObject, int delay);
-void right_Animation(lv_obj_t * TargetObject, int delay);
-void left_Animation(lv_obj_t * TargetObject, int delay);
-void upDown_Animation(lv_obj_t * TargetObject, int delay);
 // SCREEN: ui_scrOpen
 void ui_scrOpen_screen_init(void);
 void ui_event_scrOpen(lv_event_t * e);
@@ -47,13 +40,16 @@ extern lv_obj_t * ui_imgCharge;
 extern lv_obj_t * ui_labPower;
 extern lv_obj_t * ui_red_bar1;
 extern lv_obj_t * ui_red_bar2;
-extern lv_obj_t * ui_imgCloudy;
+extern lv_obj_t * ui_imgWatch1Cloudy;
 extern lv_obj_t * ui_labTemp;
 extern lv_obj_t * ui_labWeek;
 extern lv_obj_t * ui_labDate;
 extern lv_obj_t * ui_hour;
 extern lv_obj_t * ui_sec;
 extern lv_obj_t * ui_min;
+extern lv_obj_t * ui_imgWatch1Rainy;
+extern lv_obj_t * ui_imgWatch1Sunny;
+extern lv_obj_t * ui_imgWatch1Snow;
 // SCREEN: ui_scrWatch2
 void ui_scrWatch2_screen_init(void);
 void ui_event_scrWatch2(lv_event_t * e);
@@ -62,7 +58,7 @@ extern lv_obj_t * ui_charge1;
 extern lv_obj_t * ui_labPower2;
 extern lv_obj_t * ui_red_bar3;
 extern lv_obj_t * ui_red_bar4;
-extern lv_obj_t * ui_imgCloudy2;
+extern lv_obj_t * ui_imgWatch2Cloudy;
 extern lv_obj_t * ui_labTemp2;
 extern lv_obj_t * ui_labWeek2;
 extern lv_obj_t * ui_labDate2;
@@ -70,19 +66,24 @@ extern lv_obj_t * ui_labTimeHour2;
 extern lv_obj_t * ui_labTimeHour1;
 extern lv_obj_t * ui_labTimeMin;
 extern lv_obj_t * ui_sec_dot;
+extern lv_obj_t * ui_imgWatch2Sunny;
+extern lv_obj_t * ui_imgWatch2Rainy;
+extern lv_obj_t * ui_imgWatch2Snow;
 // SCREEN: ui_scrWeather
 void ui_scrWeather_screen_init(void);
 void ui_event_scrWeather(lv_event_t * e);
 extern lv_obj_t * ui_scrWeather;
-extern lv_obj_t * ui_imgSun;
-extern lv_obj_t * ui_imgCloud;
-extern lv_obj_t * ui_Image8;
-extern lv_obj_t * ui_labelTemp;
-extern lv_obj_t * ui_Label4;
-extern lv_obj_t * ui_Label5;
-extern lv_obj_t * ui_Label6;
-extern lv_obj_t * ui_Label7;
-extern lv_obj_t * ui_Label8;
+extern lv_obj_t * ui_imgWeatherHum;
+extern lv_obj_t * ui_labWeatherTemp;
+extern lv_obj_t * ui_labWeatherHum;
+extern lv_obj_t * ui_labWeatherArea;
+extern lv_obj_t * ui_labWeatherTianqi;
+extern lv_obj_t * ui_labWeatherMaxmin;
+extern lv_obj_t * ui_labWeatherDate;
+extern lv_obj_t * ui_imgWeatherRainy;
+extern lv_obj_t * ui_imgWeatherSnow;
+extern lv_obj_t * ui_imgWeatherCloudy;
+extern lv_obj_t * ui_imgWeatherSunny;
 // SCREEN: ui_scrTimer
 void ui_scrTimer_screen_init(void);
 void ui_event_scrTimer(lv_event_t * e);
@@ -110,6 +111,7 @@ extern lv_obj_t * ui_labelTomatoCount;
 extern lv_obj_t * ui_labelTomatoX;
 // SCREEN: ui_scrMenu
 void ui_scrMenu_screen_init(void);
+void ui_event_scrMenu(lv_event_t * e);
 extern lv_obj_t * ui_scrMenu;
 extern lv_obj_t * ui_Panel1;
 extern lv_obj_t * ui_Panel2;
@@ -148,23 +150,19 @@ void ui_event_PalLightSetting(lv_event_t * e);
 extern lv_obj_t * ui_PalLightSetting;
 extern lv_obj_t * ui_Image16;
 extern lv_obj_t * ui_Label20;
-void ui_event_PalLightBreath(lv_event_t * e);
 extern lv_obj_t * ui_PalLightBreath;
 extern lv_obj_t * ui_Image3;
 extern lv_obj_t * ui_Label13;
-void ui_event_PalLightFluid(lv_event_t * e);
-extern lv_obj_t * ui_PalLightFluid;
+extern lv_obj_t * ui_PalLightStay;
 extern lv_obj_t * ui_Image5;
 extern lv_obj_t * ui_Label14;
-void ui_event_PalLightRainbow(lv_event_t * e);
 extern lv_obj_t * ui_PalLightRainbow;
 extern lv_obj_t * ui_Image10;
 extern lv_obj_t * ui_Label16;
-void ui_event_PalLightSky(lv_event_t * e);
 extern lv_obj_t * ui_PalLightSky;
 extern lv_obj_t * ui_Image13;
 extern lv_obj_t * ui_Label17;
-extern lv_obj_t * ui_PalLightFramwork;
+extern lv_obj_t * ui_PalLightWave;
 extern lv_obj_t * ui_Image14;
 extern lv_obj_t * ui_Label18;
 extern lv_obj_t * ui_Panel6;
@@ -190,13 +188,17 @@ LV_IMG_DECLARE(ui_img_weather_cloud_png);    // assets/weather_cloud.png
 LV_IMG_DECLARE(ui_img_clockwise_hour_png);    // assets/clockwise_hour.png
 LV_IMG_DECLARE(ui_img_clockwise_sec_png);    // assets/clockwise_sec.png
 LV_IMG_DECLARE(ui_img_clockwise_min_png);    // assets/clockwise_min.png
+LV_IMG_DECLARE(ui_img_dayu_png);    // assets/dayu.png
+LV_IMG_DECLARE(ui_img_981806855);    // assets/weather-1.png
+LV_IMG_DECLARE(ui_img_daxue_png);    // assets/daxue.png
 LV_IMG_DECLARE(ui_img_background2_240_png);    // assets/background2_240.png
 LV_IMG_DECLARE(ui_img_sec_dot_png);    // assets/sec_dot.png
 LV_IMG_DECLARE(ui_img_background_240_png);    // assets/background_240.png
-LV_IMG_DECLARE(ui_img_sun_png);    // assets/sun.png
-LV_IMG_DECLARE(ui_img_clouds_png);    // assets/clouds.png
 LV_IMG_DECLARE(ui_img_rain_png);    // assets/rain.png
-LV_IMG_DECLARE(ui_img_bg3_png);    // assets/bg3.png
+LV_IMG_DECLARE(ui_img_dayu_grey_png);    // assets/dayu_grey.png
+LV_IMG_DECLARE(ui_img_daxue_grey_png);    // assets/daxue_grey.png
+LV_IMG_DECLARE(ui_img_1574789482);    // assets/w-1_grey.png
+LV_IMG_DECLARE(ui_img_1502817839);    // assets/weather-1_grey.png
 LV_IMG_DECLARE(ui_img_kaishi_png);    // assets/kaishi.png
 LV_IMG_DECLARE(ui_img_ai07_png);    // assets/ai07.png
 LV_IMG_DECLARE(ui_img_238951591);    // assets/zhongzhi-.png
@@ -219,6 +221,7 @@ LV_IMG_DECLARE(ui_img_watch1_170_png);    // assets/watch1_170.png
 LV_IMG_DECLARE(ui_img_watch2_170_png);    // assets/watch2_170.png
 LV_IMG_DECLARE(ui_img_bg1_png);    // assets/bg1.png
 LV_IMG_DECLARE(ui_img_bg2_png);    // assets/bg2.png
+LV_IMG_DECLARE(ui_img_bg3_png);    // assets/bg3.png
 LV_IMG_DECLARE(ui_img_btn_bg_2_png);    // assets/btn_bg_2.png
 LV_IMG_DECLARE(ui_img_call1_png);    // assets/call1.png
 LV_IMG_DECLARE(ui_img_call2_png);    // assets/call2.png

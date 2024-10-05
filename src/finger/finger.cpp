@@ -8,9 +8,6 @@
 
 #include "Finger.h"
 
-#define FINGERPRINT_TEMPLATE_MAX 10
-#define PIN_FINGER_TOUCH 14
-
 void finger_init();
 int8_t finger_enroll();
 int8_t finger_delete(uint16_t id);
@@ -18,7 +15,6 @@ int8_t finger_empty();
 int8_t finger_identify();
 uint8_t finger_inquiry();
 void finger_sleep();
-static void interrupt_finger_handler();
 
 void test_finger();
 
@@ -35,21 +31,18 @@ void finger_init(){
     delay(200);  //等待指纹识别模块初始化完成
   }
   Serial.println(fpm.getChipSN());
-  
+  finger_sleep();
+  delay(200);
   /* interrupt to touch out */ 
   pinMode(PIN_FINGER_TOUCH, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH), interrupt_finger_handler, RISING);
 }
 
-static void interrupt_finger_handler(){
+void IRAM_ATTR interrupt_finger_handler(){
   /* close interrupt */ 
   detachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH));
-  /* fianger identify */
-  int8_t finger_flag = finger_identify();
-
-  delay(200);
-  finger_sleep();
-  attachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH), interrupt_finger_handler, RISING);
+  globalData.flag_finger = 1;
+  Serial.println("finger interrupt!");
 }
 
 /* finger enroll */ 
@@ -152,6 +145,7 @@ uint8_t finger_inquiry(){
 /* finger sleep function */
 void finger_sleep(){
   fpm.sleep();
+  Serial.println("finger sleep!");
 }
 
 void test_finger(){
