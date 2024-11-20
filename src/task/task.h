@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include "motor/motor.h"
 #include "LED/led.h"
-#include "interface/interface.h"
+#include "flash/flash.h"
 #include "ui.h"
 #include "ui_helpers.h"
 #include "ui_events.h"
@@ -12,6 +12,8 @@
 #include "power/power.h"
 #include "finger/finger.h"
 #include "encoder/encoder.h"
+#include "display/display.h"
+
 extern void task_init(void);
 
 #endif

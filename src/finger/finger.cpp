@@ -15,17 +15,21 @@ int8_t finger_empty();
 int8_t finger_identify();
 uint8_t finger_inquiry();
 void finger_sleep();
-
+void finger_power_on();
+void finger_power_off();
 void test_finger();
 
 /* soft uart port */ 
 #define FPM_RX 25
 #define FPM_TX 26
+#define FPM_EN 13
 
 YFROBOTFPM383 fpm(FPM_RX, FPM_TX);
 int flag_enroll = 0;
 
 void finger_init(){
+  pinMode(FPM_EN, OUTPUT);
+  finger_power_on();
   while (fpm.getChipSN() == "") {
     Serial.println("waiting for finger init......");
     delay(200);  //等待指纹识别模块初始化完成
@@ -33,6 +37,7 @@ void finger_init(){
   Serial.println(fpm.getChipSN());
   finger_sleep();
   delay(200);
+  finger_power_off();
   /* interrupt to touch out */ 
   pinMode(PIN_FINGER_TOUCH, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH), interrupt_finger_handler, RISING);
@@ -42,58 +47,30 @@ void IRAM_ATTR interrupt_finger_handler(){
   /* close interrupt */ 
   detachInterrupt(digitalPinToInterrupt(PIN_FINGER_TOUCH));
   globalData.flag_finger = 1;
-  Serial.println("finger interrupt!");
 }
 
+
 /* finger enroll */ 
-int8_t finger_enroll(){
-  if(globalData.finger_count >= FINGERPRINT_TEMPLATE_MAX){
-    Serial.println("the finger buffer is full, please remove!");
-    return -1;
-  }
-  
-  uint16_t cur_id = 0;
-  for(int i = 0; i < FINGERPRINT_TEMPLATE_MAX; i++){
-    if(globalData.finger_id_buffer[i] == 0){
-      cur_id = i;
-      /* start to enroll */ 
-      Serial.println("Please pull your finger to the sensor 4 times in 30 seconds.");
-      Serial.printf("The cur count is:%d\n", globalData.finger_count);
-      Serial.printf("The next enroll id is:%d\n", cur_id);
-      flag_enroll = fpm.enroll(cur_id, 4);
-      if (flag_enroll == 0x00) {
-        Serial.println("finger enroll success!");
-        globalData.finger_count += 1;
-        globalData.finger_id_buffer[i] = 1;
-        return 1;
-      }else{
-        Serial.println("finger already exist!");
-        return -1;
-      }
+int8_t finger_enroll(int id){
+    flag_enroll = fpm.enroll(id, 4);
+    if (flag_enroll == 0x00) {
+      return 1;
     }
-  }
-  return -2;
+    else{
+      return 0;
+    }
 }
 
 /* finger delete function */ 
 int8_t finger_delete(uint16_t id){
   /* delete the first finger */ 
-  if(id == 0xff){  
-    for(int i = 0; i < FINGERPRINT_TEMPLATE_MAX; i++){
-      if(globalData.finger_id_buffer[i] == 1){
-        return finger_delete(i);
-      }
-    }
-  }
-
   uint8_t flag_delete = fpm.deleteID(id);
+  /* failed to delete finger */
   if(flag_delete != 0x00){
-    Serial.printf("Fail to delete finger %d!", id);
-    return -1;
-  }else{
-    Serial.printf("Success to delete finger %d!", id);
-    globalData.finger_count -= 1;
-    globalData.finger_id_buffer[id] = 0;
+    return 0;
+  }
+  /* succcess to delete finger */
+  else{
     return 1;
   }
 }
@@ -104,11 +81,10 @@ int8_t finger_empty(){
   if(flag_empty == 0x00){
     Serial.println("Success to empty finger buffer!");
     globalData.finger_count = 0;
-    memset(globalData.finger_id_buffer, 0, FINGERPRINT_TEMPLATE_MAX * sizeof(int));
     return 1;
   }else{
     Serial.println("Fail to empty finger buffer!");
-    return -1;  
+    return 0;  
   }
 }
 
@@ -145,18 +121,32 @@ uint8_t finger_inquiry(){
 /* finger sleep function */
 void finger_sleep(){
   fpm.sleep();
-  Serial.println("finger sleep!");
+  // Serial.println("finger sleep!");
 }
+
+
+/* open finger power */
+void finger_power_on(){
+  digitalWrite(FPM_EN, HIGH);
+  delay(180);
+}
+
+/*close finger power */
+void finger_power_off(){
+  digitalWrite(FPM_EN, LOW);
+  delay(180);
+}
+
 
 void test_finger(){
   while (Serial.available() > 0) { // 检查是否有数据可读
     int input = Serial.parseInt(); // 读取整数数据
       switch (input) {
         case 1:
-          finger_enroll();
+          finger_enroll(1);
           break;
         case 2:
-          finger_delete(0xff);
+          finger_delete(1);
           break;
         case 3:
           finger_empty();

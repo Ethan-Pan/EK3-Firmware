@@ -57,7 +57,7 @@ void ui_scrLight_screen_init(void)
     lv_obj_set_align(ui_PalLightSetting, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_PalLightSetting, LV_FLEX_FLOW_ROW);
     lv_obj_set_flex_align(ui_PalLightSetting, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_clear_flag(ui_PalLightSetting, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_clear_flag(ui_PalLightSetting, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(ui_PalLightSetting, 15, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_PalLightSetting, lv_color_hex(0x111717), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_PalLightSetting, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -118,7 +118,7 @@ void ui_scrLight_screen_init(void)
     lv_obj_set_width(ui_Label13, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label13, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Label13, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label13, "呼吸效果");
+    lv_label_set_text(ui_Label13, "呼吸模式");
     lv_obj_set_style_text_font(ui_Label13, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_PalLightStay = lv_obj_create(ui_Panel8);
@@ -154,7 +154,7 @@ void ui_scrLight_screen_init(void)
     lv_obj_set_width(ui_Label14, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label14, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Label14, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_Label14, "常亮效果");
+    lv_label_set_text(ui_Label14, "常亮模式");
     lv_obj_set_style_text_font(ui_Label14, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_PalLightRainbow = lv_obj_create(ui_Panel8);

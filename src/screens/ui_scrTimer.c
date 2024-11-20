@@ -75,7 +75,7 @@ void ui_scrTimer_screen_init(void)
     lv_obj_set_x(ui_imgTimerPause, -37);
     lv_obj_set_y(ui_imgTimerPause, 59);
     lv_obj_set_align(ui_imgTimerPause, LV_ALIGN_CENTER);
-    lv_obj_add_flag(ui_imgTimerPause, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
+    lv_obj_add_flag(ui_imgTimerPause, LV_OBJ_FLAG_HIDDEN | LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_ADV_HITTEST);     /// Flags
     lv_obj_clear_flag(ui_imgTimerPause, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
     ui_imgTimerRst = lv_img_create(ui_scrTimer);

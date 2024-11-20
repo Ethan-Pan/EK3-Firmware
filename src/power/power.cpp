@@ -21,7 +21,7 @@ void power_init(){
     adc_chars = (esp_adc_cal_characteristics_t *) malloc(sizeof(esp_adc_cal_characteristics_t));
     esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN, ADC_WIDTH, DEFAULT_VREF, adc_chars);
     // 使能外部0引脚唤醒
-    esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 0); 
+    esp_sleep_enable_ext0_wakeup(GPIO_NUM_2, 0); 
 }
 
 uint32_t read_power(){
@@ -48,4 +48,26 @@ uint32_t get_charge_state(){
     uint32_t voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
     
     return voltage;
+}
+
+/* calculate the init charge voltage percent */
+int get_voltage_base_percent(int baseVoltage){
+    if(baseVoltage >= POWER_MAX){
+        return 100;
+    }
+    else{
+        return (baseVoltage - POWER_MIN) / (POWER_MAX - POWER_MIN) * 100;
+    }
+    // if(baseVoltage >= POWER_20){
+    //     return (baseVoltage - POWER_20) / (POWER_MAX - POWER_20) * 80 + 20;
+    // }
+    // else{
+    //     return (baseVoltage - POWER_20) / (POWER_20 - POWER_MIN) * 20;
+    // }
+}
+
+/* calculate the additional charge power pecent per sencond */
+int get_add_bat_charge(int chargeVoltage){
+    int chargeRes = 1200;  // the charge resistence of TP4056 is 1.2k ohm
+    return (chargeVoltage / chargeRes) / 72;
 }

@@ -277,16 +277,16 @@ uint8_t YFROBOTFPM383::enroll(uint16_t PageID, uint8_t entriesCount)
     controlLED(PS_BlueLEDBuffer); // 点亮蓝灯，注册开始
     delay(10);
     uint8_t *confirmationCode = autoEnroll(PageID, entriesCount);
-    // Serial.print(confirmationCode[0]);
-    // Serial.print(" ");
-    // Serial.print(confirmationCode[1]);
-    // Serial.print(" ");
-    // Serial.println(confirmationCode[2]);
-    if(confirmationCode[0] == 0x00 &&confirmationCode[1] == 0x06 &&confirmationCode[2] == 0xf2  ){
+    Serial.print(confirmationCode[0]);
+    Serial.print(" ");
+    Serial.print(confirmationCode[1]);
+    Serial.print(" ");
+    Serial.println(confirmationCode[2]);
+    if(confirmationCode[0] == 0x00 &&confirmationCode[1] == 0x06 &&confirmationCode[2] == 0xf2){
         controlLED(PS_GreenLEDBuffer); // 绿灯闪烁，注册成功
         Serial.println("ok");
         return 0x00;
-    }else if(confirmationCode[0] == 0x22 &&confirmationCode[1] == 0x00 &&confirmationCode[2] == 0x00  ){
+    }else if(confirmationCode[0] == 0x22 &&confirmationCode[1] == 0x00 &&confirmationCode[2] == 0x00){
         controlLED(PS_RedLEDLOOPBuffer);
         return 0x01; // 该ID已注册指纹循环闪烁红灯
     } else {

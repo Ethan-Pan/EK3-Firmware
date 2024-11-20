@@ -40,6 +40,8 @@ void ui_scrWeather_screen_init(void)
     lv_obj_set_y(ui_labWeatherHum, 87);
     lv_obj_set_align(ui_labWeatherHum, LV_ALIGN_CENTER);
     lv_label_set_text(ui_labWeatherHum, "18%");
+    lv_obj_set_style_text_color(ui_labWeatherHum, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_labWeatherHum, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_labWeatherArea = lv_label_create(ui_scrWeather);
     lv_obj_set_width(ui_labWeatherArea, LV_SIZE_CONTENT);   /// 1
@@ -48,6 +50,8 @@ void ui_scrWeather_screen_init(void)
     lv_obj_set_y(ui_labWeatherArea, -76);
     lv_obj_set_align(ui_labWeatherArea, LV_ALIGN_CENTER);
     lv_label_set_text(ui_labWeatherArea, "SHEN ZHEN");
+    lv_obj_set_style_text_color(ui_labWeatherArea, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_labWeatherArea, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_labWeatherArea, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_labWeatherTianqi = lv_label_create(ui_scrWeather);
@@ -57,7 +61,7 @@ void ui_scrWeather_screen_init(void)
     lv_obj_set_y(ui_labWeatherTianqi, 36);
     lv_obj_set_align(ui_labWeatherTianqi, LV_ALIGN_CENTER);
     lv_label_set_text(ui_labWeatherTianqi, "Rainy");
-    lv_obj_set_style_text_color(ui_labWeatherTianqi, lv_color_hex(0xC1C1C1), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_labWeatherTianqi, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_labWeatherTianqi, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_labWeatherTianqi, &lv_font_montserrat_14, LV_PART_MAIN | LV_STATE_DEFAULT);
 
@@ -68,7 +72,7 @@ void ui_scrWeather_screen_init(void)
     lv_obj_set_y(ui_labWeatherMaxmin, 54);
     lv_obj_set_align(ui_labWeatherMaxmin, LV_ALIGN_CENTER);
     lv_label_set_text(ui_labWeatherMaxmin, "Max:18° Min:10°");
-    lv_obj_set_style_text_color(ui_labWeatherMaxmin, lv_color_hex(0xA29F9F), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_labWeatherMaxmin, lv_color_hex(0xC4C2C2), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_labWeatherMaxmin, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_labWeatherDate = lv_label_create(ui_scrWeather);
@@ -78,7 +82,7 @@ void ui_scrWeather_screen_init(void)
     lv_obj_set_y(ui_labWeatherDate, -48);
     lv_obj_set_align(ui_labWeatherDate, LV_ALIGN_CENTER);
     lv_label_set_text(ui_labWeatherDate, "07 28 Monday");
-    lv_obj_set_style_text_color(ui_labWeatherDate, lv_color_hex(0xA2A1A1), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_color(ui_labWeatherDate, lv_color_hex(0xC4C2C2), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_labWeatherDate, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_imgWeatherRainy = lv_img_create(ui_scrWeather);

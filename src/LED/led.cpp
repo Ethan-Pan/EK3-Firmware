@@ -10,6 +10,7 @@ void led_breath(void);
 void led_wave(void);
 void led_stay(void);
 void led_rainbow(void);
+void led_open(void);
 
 
 void led_init(){
@@ -19,18 +20,24 @@ void led_init(){
 }
 
 void led_close(){
-  FastLED.clear();  // 将所有LED设置为黑色（关闭）
+  FastLED.setBrightness(0);  // 将所有LED亮度设置为0
   FastLED.show();   // 更新LED显示
 }
 
 void led_rainbow() {
+  FastLED.setBrightness(BRIGHTNESS);
   fill_rainbow(leds, NUM_LEDS, gHue, 7);
   FastLED.delay(10);
 }
 
+void led_open(){
+  FastLED.setBrightness(BRIGHTNESS);
+  FastLED.show();
+}
 
 void led_sky(){
   // Eight colored dots, weaving in and out of sync with each other
+  FastLED.setBrightness(BRIGHTNESS);
   fadeToBlackBy(leds, NUM_LEDS, 20);
   byte dothue = 0;
   for (int i = 0; i < 8; i++) {
@@ -41,6 +48,7 @@ void led_sky(){
 }
 
 void led_wave(){
+  FastLED.setBrightness(BRIGHTNESS);
   for(int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CHSV(gHue+(i*2), 255, qadd8(inoise8(i*10, millis()/5), 16));
     FastLED.delay(10);
@@ -48,6 +56,7 @@ void led_wave(){
 }
 
 void led_breath(){
+  FastLED.setBrightness(BRIGHTNESS);
   // 使用正弦函数来创建平滑的亮度变化
   float breath = (exp(sin(millis()/2000.0*PI)) - 0.36787944)*108.0;
   
@@ -66,6 +75,6 @@ void led_breath(){
 
 void led_stay(){
   fill_solid(leds, NUM_LEDS, CRGB::Blue);
-  FastLED.setBrightness(200); 
+  FastLED.setBrightness(BRIGHTNESS); 
   FastLED.show();
 }

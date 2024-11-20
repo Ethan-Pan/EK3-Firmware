@@ -6,7 +6,11 @@
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 #include <CST816S.h>
+#include <Ticker.h>
+#include <driver/ledc.h>
 
 extern void dis_init(void);
+extern void turnOffScreen();
+extern void turnOnScreen();
 
 #endif

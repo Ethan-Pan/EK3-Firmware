@@ -26,12 +26,18 @@ extern "C" {
 #include "components/ui_comp.h"
 #include "components/ui_comp_hook.h"
 #include "ui_events.h"
+#include "common/common.h"
+
 
 // SCREEN: ui_scrOpen
 void ui_scrOpen_screen_init(void);
 void ui_event_scrOpen(lv_event_t * e);
 extern lv_obj_t * ui_scrOpen;
 extern lv_obj_t * ui_logo;
+extern lv_obj_t * ui_labOpen;
+extern lv_obj_t * ui_pannelOpen;
+extern lv_obj_t * ui_Label6;
+extern lv_obj_t * ui_spinOpen;
 // SCREEN: ui_scrWatch1
 void ui_scrWatch1_screen_init(void);
 void ui_event_scrWatch1(lv_event_t * e);
@@ -50,11 +56,14 @@ extern lv_obj_t * ui_min;
 extern lv_obj_t * ui_imgWatch1Rainy;
 extern lv_obj_t * ui_imgWatch1Sunny;
 extern lv_obj_t * ui_imgWatch1Snow;
+extern lv_obj_t * ui_ArcPower1;
+extern lv_obj_t * ui_dotWatch11;
+extern lv_obj_t * ui_dotWatch12;
 // SCREEN: ui_scrWatch2
 void ui_scrWatch2_screen_init(void);
 void ui_event_scrWatch2(lv_event_t * e);
 extern lv_obj_t * ui_scrWatch2;
-extern lv_obj_t * ui_charge1;
+extern lv_obj_t * ui_imgCharge2;
 extern lv_obj_t * ui_labPower2;
 extern lv_obj_t * ui_red_bar3;
 extern lv_obj_t * ui_red_bar4;
@@ -69,6 +78,9 @@ extern lv_obj_t * ui_sec_dot;
 extern lv_obj_t * ui_imgWatch2Sunny;
 extern lv_obj_t * ui_imgWatch2Rainy;
 extern lv_obj_t * ui_imgWatch2Snow;
+extern lv_obj_t * ui_ArcPower2;
+extern lv_obj_t * ui_dotWatch21;
+extern lv_obj_t * ui_dotWatch22;
 // SCREEN: ui_scrWeather
 void ui_scrWeather_screen_init(void);
 void ui_event_scrWeather(lv_event_t * e);
@@ -119,10 +131,10 @@ void ui_event_PalWatch2(lv_event_t * e);
 extern lv_obj_t * ui_PalWatch2;
 extern lv_obj_t * ui_Image11;
 extern lv_obj_t * ui_Label15;
-void ui_event_PalWatch(lv_event_t * e);
-extern lv_obj_t * ui_PalWatch;
-extern lv_obj_t * ui_Image4;
-extern lv_obj_t * ui_Label3;
+void ui_event_PalMusic(lv_event_t * e);
+extern lv_obj_t * ui_PalMusic;
+extern lv_obj_t * ui_Image19;
+extern lv_obj_t * ui_Label2;
 void ui_event_PalWeather(lv_event_t * e);
 extern lv_obj_t * ui_PalWeather;
 extern lv_obj_t * ui_Image12;
@@ -139,6 +151,10 @@ void ui_event_PalLight(lv_event_t * e);
 extern lv_obj_t * ui_PalLight;
 extern lv_obj_t * ui_Image9;
 extern lv_obj_t * ui_Label12;
+void ui_event_PalUpdate(lv_event_t * e);
+extern lv_obj_t * ui_PalUpdate;
+extern lv_obj_t * ui_Image4;
+extern lv_obj_t * ui_Label3;
 extern lv_obj_t * ui_Panel3;
 // SCREEN: ui_scrLight
 void ui_scrLight_screen_init(void);
@@ -166,21 +182,44 @@ extern lv_obj_t * ui_PalLightWave;
 extern lv_obj_t * ui_Image14;
 extern lv_obj_t * ui_Label18;
 extern lv_obj_t * ui_Panel6;
-// SCREEN: ui_scrWatchSelect
-void ui_scrWatchSelect_screen_init(void);
-extern lv_obj_t * ui_scrWatchSelect;
-extern lv_obj_t * ui_Panel4;
-extern lv_obj_t * ui_imgWatch4;
-void ui_event_imgWatch1(lv_event_t * e);
-extern lv_obj_t * ui_imgWatch1;
-void ui_event_imgWatch2(lv_event_t * e);
-extern lv_obj_t * ui_imgWatch2;
-extern lv_obj_t * ui_imgWatch3;
+// SCREEN: ui_scrUpdate
+void ui_scrUpdate_screen_init(void);
+void ui_event_scrUpdate(lv_event_t * e);
+extern lv_obj_t * ui_scrUpdate;
+extern lv_obj_t * ui_panelAlready;
+extern lv_obj_t * ui_labUpdate2;
+extern lv_obj_t * ui_labUpdate3;
+extern lv_obj_t * ui_panelNewVersion;
+extern lv_obj_t * ui_panelAlready1;
+extern lv_obj_t * ui_labUpdate4;
+extern lv_obj_t * ui_labUpdate5;
+extern lv_obj_t * ui_buttonUpdate;
+extern lv_obj_t * ui_labUpdate;
+extern lv_obj_t * ui_buttonCancel;
+extern lv_obj_t * ui_labCancel;
+extern lv_obj_t * ui_panelCheckUpdate;
+extern lv_obj_t * ui_labUpdate1;
+extern lv_obj_t * ui_spinUpdate;
+extern lv_obj_t * ui_panelNoWifi;
+extern lv_obj_t * ui_labUpdate6;
+// SCREEN: ui_scrMusic
+void ui_scrMusic_screen_init(void);
+void ui_event_scrMusic(lv_event_t * e);
+extern lv_obj_t * ui_scrMusic;
+extern lv_obj_t * ui_imgLastMusic;
+extern lv_obj_t * ui_imgNexMusic;
+extern lv_obj_t * ui_imgStartMusic;
+extern lv_obj_t * ui_imgEndMusic;
+extern lv_obj_t * ui_labMusicHour;
+extern lv_obj_t * ui_labMusicMin;
+extern lv_obj_t * ui_labMusicDot;
+extern lv_obj_t * ui_imgSound;
+extern lv_obj_t * ui_imgMute;
 extern lv_obj_t * ui____initial_actions0;
 
 
 LV_IMG_DECLARE(ui_img_1718244669);    // assets/图片1.png
-LV_IMG_DECLARE(ui_img_background3_240_png);    // assets/background3_240.png
+LV_IMG_DECLARE(ui_img_background2_240_png);    // assets/background2_240.png
 LV_IMG_DECLARE(ui_img_flash_png);    // assets/flash.png
 LV_IMG_DECLARE(ui_img_btn_bg_1_png);    // assets/btn_bg_1.png
 LV_IMG_DECLARE(ui_img_btn_bg_3_png);    // assets/btn_bg_3.png
@@ -191,7 +230,6 @@ LV_IMG_DECLARE(ui_img_clockwise_min_png);    // assets/clockwise_min.png
 LV_IMG_DECLARE(ui_img_dayu_png);    // assets/dayu.png
 LV_IMG_DECLARE(ui_img_981806855);    // assets/weather-1.png
 LV_IMG_DECLARE(ui_img_daxue_png);    // assets/daxue.png
-LV_IMG_DECLARE(ui_img_background2_240_png);    // assets/background2_240.png
 LV_IMG_DECLARE(ui_img_sec_dot_png);    // assets/sec_dot.png
 LV_IMG_DECLARE(ui_img_background_240_png);    // assets/background_240.png
 LV_IMG_DECLARE(ui_img_rain_png);    // assets/rain.png
@@ -206,19 +244,24 @@ LV_IMG_DECLARE(ui_img_1249513910);    // assets/番茄 (2).png
 LV_IMG_DECLARE(ui_img_kaishi1_png);    // assets/kaishi1.png
 LV_IMG_DECLARE(ui_img_fanqie_new_png);    // assets/fanqie_new.png
 LV_IMG_DECLARE(ui_img_yonghu_png);    // assets/yonghu.png
-LV_IMG_DECLARE(ui_img_shizhongtianchong_png);    // assets/shizhongtianchong.png
+LV_IMG_DECLARE(ui_img_yinyue_png);    // assets/yinyue.png
 LV_IMG_DECLARE(ui_img_tianqi_new_png);    // assets/tianqi_new.png
 LV_IMG_DECLARE(ui_img_jishiqi_png);    // assets/jishiqi.png
 LV_IMG_DECLARE(ui_img_caihong_png);    // assets/caihong.png
+LV_IMG_DECLARE(ui_img_1051555317);    // assets/a-shuaxingengxin.png
 LV_IMG_DECLARE(ui_img_shezhi_png);    // assets/shezhi.png
 LV_IMG_DECLARE(ui_img_1_round_solid_png);    // assets/1_round_solid.png
 LV_IMG_DECLARE(ui_img_2_round_solid_png);    // assets/2_round_solid.png
 LV_IMG_DECLARE(ui_img_3_round_solid_png);    // assets/3_round_solid.png
 LV_IMG_DECLARE(ui_img_4_round_solid_png);    // assets/4_round_solid.png
 LV_IMG_DECLARE(ui_img_5_round_solid_png);    // assets/5_round_solid.png
-LV_IMG_DECLARE(ui_img_bias_png);    // assets/bias.png
-LV_IMG_DECLARE(ui_img_watch1_170_png);    // assets/watch1_170.png
-LV_IMG_DECLARE(ui_img_watch2_170_png);    // assets/watch2_170.png
+LV_IMG_DECLARE(ui_img_lastmusic_png);    // assets/lastmusic.png
+LV_IMG_DECLARE(ui_img_nextmusic_png);    // assets/nextMusic.png
+LV_IMG_DECLARE(ui_img_bofangmusic_png);    // assets/bofangMusic.png
+LV_IMG_DECLARE(ui_img_zantingmusic_png);    // assets/zantingMusic.png
+LV_IMG_DECLARE(ui_img_yinliang_png);    // assets/yinliang.png
+LV_IMG_DECLARE(ui_img_jingyin_png);    // assets/jingyin.png
+LV_IMG_DECLARE(ui_img_background3_240_png);    // assets/background3_240.png
 LV_IMG_DECLARE(ui_img_bg1_png);    // assets/bg1.png
 LV_IMG_DECLARE(ui_img_bg2_png);    // assets/bg2.png
 LV_IMG_DECLARE(ui_img_bg3_png);    // assets/bg3.png
@@ -234,6 +277,8 @@ LV_IMG_DECLARE(ui_img_shezhi_1_png);    // assets/shezhi_1.png
 LV_IMG_DECLARE(ui_img_shezhi_2_png);    // assets/shezhi_2.png
 LV_IMG_DECLARE(ui_img_shezhi_3_png);    // assets/shezhi_3.png
 LV_IMG_DECLARE(ui_img_2071213044);    // assets/Snipaste_2023-07-02_21-08-10.png
+LV_IMG_DECLARE(ui_img_watch1_170_png);    // assets/watch1_170.png
+LV_IMG_DECLARE(ui_img_watch2_170_png);    // assets/watch2_170.png
 LV_IMG_DECLARE(ui_img_wave1_png);    // assets/wave1.png
 LV_IMG_DECLARE(ui_img_wave2_png);    // assets/wave2.png
 LV_IMG_DECLARE(ui_img_yonghu_1_png);    // assets/yonghu_1.png
@@ -244,6 +289,7 @@ LV_FONT_DECLARE(ui_font_chinese);
 LV_FONT_DECLARE(ui_font_chinesebig);
 LV_FONT_DECLARE(ui_font_Number_big);
 LV_FONT_DECLARE(ui_font_Number_Large);
+LV_FONT_DECLARE(ui_font_chinesSmall);
 
 
 

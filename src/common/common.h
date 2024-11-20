@@ -1,6 +1,8 @@
 #ifndef __COMMON_NEW_H__
 #define __COMMON_NEW_H__
 
+#include <Arduino.h>
+
 typedef struct {
     /* current time */
     int cur_time_hour;
@@ -17,20 +19,26 @@ typedef struct {
     int flag_tomato;
     int flag_timer_rst;
     int flag_led;
-    int flag_motor;
+    int flag_switch;
     int flag_finger;
     int flag_power;
     int flag_encoder;
+    int flag_screen;
+    int flag_finger_power;
+    int flag_config;
     /* fingers ID */
     int finger_count;
-    int finger_id_buffer[10];
     /* power */
     int last_charge_value;
     int last_nocharge_value;
     int change_stay_count;
     int voltage_bias;
+    int power_charge_state;
+    int power_charge_base;
     /* led */
     int led_mode;
+    /* time */
+    unsigned long time_finger_touch;
 
 } GlobalDataStru;
 

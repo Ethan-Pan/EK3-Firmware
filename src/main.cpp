@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "interface/interface.h"
+#include "flash/flash.h"
 #include "ui.h"
 #include "esp_sleep.h"
 #include "LED/led.h"
@@ -10,14 +10,18 @@
 #include "power/power.h"
 #include "finger/finger.h"
 #include "encoder/encoder.h"
+#include "bluetooth/bluetooth.h"
 
-
+ 
 void setup() {
-    Serial.begin(115200);
     /* COMMON */
     common_init();
+    /* READ CONFIG */
+    config_init();
     /* DISPLAY */
     dis_init();
+    /* LVGL UI */
+    ui_init(); 
     /* LED  */
     led_init();
     /* SWITCH & MOTOR */
@@ -28,12 +32,12 @@ void setup() {
     encoder_init();
     /* POWER */
     power_init();
-    /* LVGL UI */
-    ui_init(); 
+    /* BLUETOOTH */
+    // ble_init();
     /* LVGL EVENT */
     ui_event_init();
-    /* READ JSON */
-    connect_init();
+    /* CONFIG UPDATE */
+    config_update();
     /* CREATE TASK */
     task_init();   
 }
@@ -42,3 +46,4 @@ void loop() {
   lv_timer_handler(); /* let the GUI do its work */
   delay(5);
 }
+

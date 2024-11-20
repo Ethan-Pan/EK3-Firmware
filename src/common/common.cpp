@@ -3,6 +3,7 @@
 GlobalDataStru globalData = {0};
 
 void common_init(){
+    Serial.begin(115200);
     globalData.change_stay_count = 30;
-    globalData.led_mode = 1;  // led breath
+    globalData.led_mode = 2;  // led breath
 }

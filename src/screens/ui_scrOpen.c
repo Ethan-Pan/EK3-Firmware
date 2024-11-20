@@ -21,6 +21,53 @@ void ui_scrOpen_screen_init(void)
     lv_obj_clear_flag(ui_logo, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_img_set_zoom(ui_logo, 128);
 
+    ui_labOpen = lv_label_create(ui_scrOpen);
+    lv_obj_set_width(ui_labOpen, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_labOpen, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_labOpen, 0);
+    lv_obj_set_y(ui_labOpen, 53);
+    lv_obj_set_align(ui_labOpen, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_labOpen, "请连接EK Home\n     进行配置");
+    lv_obj_add_flag(ui_labOpen, LV_OBJ_FLAG_HIDDEN);     /// Flags
+    lv_obj_set_style_text_font(ui_labOpen, &ui_font_chinesSmall, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_pannelOpen = lv_obj_create(ui_scrOpen);
+    lv_obj_set_width(ui_pannelOpen, 100);
+    lv_obj_set_height(ui_pannelOpen, 98);
+    lv_obj_set_x(ui_pannelOpen, 0);
+    lv_obj_set_y(ui_pannelOpen, 53);
+    lv_obj_set_align(ui_pannelOpen, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_pannelOpen, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(ui_pannelOpen, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_add_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN);     /// Flags
+    lv_obj_clear_flag(ui_pannelOpen, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_bg_color(ui_pannelOpen, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_pannelOpen, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_color(ui_pannelOpen, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_border_opa(ui_pannelOpen, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Label6 = lv_label_create(ui_pannelOpen);
+    lv_obj_set_width(ui_Label6, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label6, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_Label6, -2);
+    lv_obj_set_y(ui_Label6, 40);
+    lv_obj_set_align(ui_Label6, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_Label6, "配置中");
+    lv_obj_set_style_text_font(ui_Label6, &ui_font_chinesSmall, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_spinOpen = lv_spinner_create(ui_pannelOpen, 1000, 90);
+    lv_obj_set_width(ui_spinOpen, 30);
+    lv_obj_set_height(ui_spinOpen, 30);
+    lv_obj_set_x(ui_spinOpen, -7);
+    lv_obj_set_y(ui_spinOpen, 36);
+    lv_obj_set_align(ui_spinOpen, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_spinOpen, LV_OBJ_FLAG_CLICKABLE);      /// Flags
+    lv_obj_set_style_arc_width(ui_spinOpen, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    lv_obj_set_style_arc_color(ui_spinOpen, lv_color_hex(0xF9FDFE), LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_opa(ui_spinOpen, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+    lv_obj_set_style_arc_width(ui_spinOpen, 5, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+
     lv_obj_add_event_cb(ui_scrOpen, ui_event_scrOpen, LV_EVENT_ALL, NULL);
 
 }
