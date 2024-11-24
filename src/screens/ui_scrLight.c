@@ -267,7 +267,6 @@ void ui_scrLight_screen_init(void)
     lv_obj_set_style_border_color(ui_Panel6, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_border_opa(ui_Panel6, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    lv_obj_add_event_cb(ui_PalLightSetting, ui_event_PalLightSetting, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_scrLight, ui_event_scrLight, LV_EVENT_ALL, NULL);
 
 }

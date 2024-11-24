@@ -10,18 +10,16 @@
 #include "power/power.h"
 #include "finger/finger.h"
 #include "encoder/encoder.h"
-#include "bluetooth/bluetooth.h"
-
+#include "wifi/wifi.h"
+#include "common/common.h"
+#include  "keyboard/keyboard.h"
+#include  "bluetooth/bluetooth.h"
  
 void setup() {
     /* COMMON */
     common_init();
     /* READ CONFIG */
     config_init();
-    /* DISPLAY */
-    dis_init();
-    /* LVGL UI */
-    ui_init(); 
     /* LED  */
     led_init();
     /* SWITCH & MOTOR */
@@ -32,14 +30,24 @@ void setup() {
     encoder_init();
     /* POWER */
     power_init();
-    /* BLUETOOTH */
-    // ble_init();
+    /* KEYBOARD */
+    if(globalData.flag_config == 1 && gJsonData.connect_flag == 1){
+        ble_keyboard_init();
+    }
+    /* BLE */
+    if(globalData.flag_config == 1 && gJsonData.connect_flag == 2){
+        ble_init();
+    }
+    /* DISPLAY */
+    dis_init();
+    /* LVGL UI */
+    ui_init(); 
     /* LVGL EVENT */
     ui_event_init();
     /* CONFIG UPDATE */
     config_update();
     /* CREATE TASK */
-    task_init();   
+    task_init();  
 }
 
 void loop() {

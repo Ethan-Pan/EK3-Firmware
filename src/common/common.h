@@ -26,6 +26,8 @@ typedef struct {
     int flag_screen;
     int flag_finger_power;
     int flag_config;
+    int flag_wifi_connect;
+    int flag_ble_busy;
     /* fingers ID */
     int finger_count;
     /* power */
@@ -39,7 +41,10 @@ typedef struct {
     int led_mode;
     /* time */
     unsigned long time_finger_touch;
-
+    /* encoder */
+    int encoder_last_count;
+    /* music */
+    int music_state;
 } GlobalDataStru;
 
 extern GlobalDataStru globalData;

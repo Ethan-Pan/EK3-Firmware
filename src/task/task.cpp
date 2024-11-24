@@ -27,6 +27,11 @@ static void task_power(void *pt);
 static void task_finger(void *pt);
 static void task_encoder(void *pt);
 static void task_uart(void *pt);
+// static void task_clock(void *pt);
+// static void task_wifi_connect(void *pt);
+// static void task_weather(void *pt);
+static void task_music(void *pt);
+static void ui_config_init(void);
 
 
 /* task init */
@@ -40,6 +45,25 @@ void task_init(){
     xTaskCreate(task_finger, "task_finger", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_encoder, "task_encoder", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_uart, "task_uart", 1024*4, NULL, 1, NULL);
+    xTaskCreate(task_music, "task_music", 1024*4, NULL, 1, NULL);
+    // if(gJsonData.connect_flag == 1){    //  connect mode is wifi
+    //     xTaskCreate(task_clock, "task_clock", 1024*4, NULL, 1, NULL);
+    //     xTaskCreate(task_wifi_connect, "task_wifi_connect", 1024*4, NULL, 1, NULL);
+    //     xTaskCreate(task_weather, "task_weather", 1024*4, NULL, 1, NULL);
+    // }
+    ui_config_init();
+}
+
+/* ui config init */
+/*
+    for .c file (ui.h) connot include .cpp header (such as flash.h),
+    so the ui config init is in the task.cpp file
+*/
+static void ui_config_init(){
+    if(gJsonData.power_show == 0){
+        lv_obj_add_flag(ui_labPower, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(ui_labPower2, LV_OBJ_FLAG_HIDDEN);
+    }
 }
 
 /* switch task */
@@ -131,6 +155,33 @@ static void task_watch(void *pt){
             sprintf(time_str, "%01d", globalData.cur_time_hour/10);
             lv_label_set_text(ui_labTimeHour2, time_str);
         }        
+        // 检查是否需要进入深度休眠
+        // 检查当前时间是否在省电时间段内
+        bool isInPowerSaveTime = false;
+        
+        if((globalData.cur_time_hour == gJsonData.power_end_hour && globalData.cur_time_min > gJsonData.power_end_min)||globalData.cur_time_hour > gJsonData.power_end_hour){
+            if((globalData.cur_time_hour == gJsonData.power_start_hour && globalData.cur_time_min < gJsonData.power_start_min)||globalData.cur_time_hour < gJsonData.power_start_hour){
+                isInPowerSaveTime = false;
+            }
+            else{
+                isInPowerSaveTime = true;
+            }
+        }else{
+            isInPowerSaveTime = true;
+        }
+
+        // if(isInPowerSaveTime) {
+        //     Serial.printf("Deep Sleep MODE\n");
+            // led_close();
+            // turnOffScreen();
+            // esp_deep_sleep_start(); 
+            // // 计算当前时间到power_end的时间差(以分钟为单位)
+            // int wakeupMinutes = 0;
+            // wakeupMinutes = (24 - globalData.cur_time_hour + gJsonData.power_end_hour) * 60 + 
+            //                    (gJsonData.power_end_min - globalData.cur_time_min);
+            // // 设置定时器唤醒时间(转换为微秒)
+            // esp_sleep_enable_timer_wakeup(wakeupMinutes * 60 * 1000000ULL);
+        // }
         lv_img_set_angle(ui_sec, gSecAngle);
         lv_img_set_angle(ui_sec_dot, gSecAngle);
         vTaskDelay(50);
@@ -388,6 +439,12 @@ static void task_finger(void *pt){
                 int8_t result = finger_identify();
                 if (result == 1) {
                     motor_short();
+                    if(gJsonData.connect_flag == 1){
+                        keyboard_finger();
+                    }
+                    if(gJsonData.connect_flag == 2){
+                        ble_send_string(BLE_FINGER);
+                    }
                 } else {
                     motor_short_twice();
                 }
@@ -415,7 +472,29 @@ static void task_encoder(void *pt){
         if(globalData.flag_encoder == 1){
             globalData.flag_encoder = 0;
             int64_t count = read_encoder_count();
-            Serial.printf("ENCORDER COUNT: %d\n", count);
+            if(globalData.encoder_last_count == 9999){
+                globalData.encoder_last_count = count;
+            }else{
+                if(count > globalData.encoder_last_count){
+                    if(gJsonData.connect_flag == 1){
+                        keyboard_volume_up();
+                    }
+                    if(gJsonData.connect_flag == 2){
+                        ble_send_string(BLE_ROTATE_RIGHT);
+                    }
+                    // Serial.printf("ENCORDER RIGHT: %d\n", count);   
+                }
+                else if(count < globalData.encoder_last_count){
+                    if(gJsonData.connect_flag == 1){
+                        keyboard_volume_down();
+                    }
+                    if(gJsonData.connect_flag == 2){
+                        ble_send_string(BLE_ROTATE_LEFT);
+                    }
+                    // Serial.printf("ENCORDER LEFT: %d\n", count);
+                }
+            }
+            globalData.encoder_last_count = count;  
         }
         vTaskDelay(10);
     }
@@ -423,7 +502,6 @@ static void task_encoder(void *pt){
 
 /* uart task */
 static void task_uart(void *pt) {
-    String receivedString = "";
     while(1) {
         if(Serial.available()) {
             serialEvent();
@@ -432,4 +510,99 @@ static void task_uart(void *pt) {
     }
 }
 
+/* music task */
+static void task_music(void *pt){
+    while(1){
+        switch (globalData.music_state)
+        {
+        case 1:
+            if(gJsonData.connect_flag == 1){
+                keyboard_play_pause();
+            }
+            if(gJsonData.connect_flag == 2){
+                ble_send_string(BLE_PAUSE);
+            }
+            globalData.music_state = 0;
+            break;
+        case 2:
+            if(gJsonData.connect_flag == 1){
+                keyboard_play_pause();
+            }
+            if(gJsonData.connect_flag == 2){
+                ble_send_string(BLE_PLAY);
+            }
+            globalData.music_state = 0;
+            break;
+        case 3:
+            if(gJsonData.connect_flag == 1){
+                keyboard_next();
+            }
+            if(gJsonData.connect_flag == 2){
+                ble_send_string(BLE_NEXT);
+            }
+            globalData.music_state = 0;
+            break;
+        case 4:
+            if(gJsonData.connect_flag == 1){
+                keyboard_prev();
+            }
+            if(gJsonData.connect_flag == 2){
+                ble_send_string(BLE_PREV);
+            }
+            globalData.music_state = 0;
+            break;
+        case 5:
+            if(gJsonData.connect_flag == 1){
+                keyboard_mute();
+            }
+            if(gJsonData.connect_flag == 2){
+                ble_send_string(BLE_MUTE);
+            }
+            globalData.music_state = 0;
+            break;
+        case 6:
+            if(gJsonData.connect_flag == 1){
+                keyboard_unmute();
+            }
+            if(gJsonData.connect_flag == 2){
+                ble_send_string(BLE_NO_MUTE);
+            }
+            globalData.music_state = 0;
+            break;
+        default:
+            break;
+        }
+        vTaskDelay(10);
+    }
+}
 
+// static void task_clock(void *pt){
+//     while(1){
+//         if(check_wifi_connect() == 1 && globalData.flag_ble_busy == 0){
+//             Serial.println("task clock");
+//             update_clock();
+//             update_date();
+//             update_time();
+//         }
+//         vTaskDelay(1000 * 60 * 60);  // 每小时更新一次
+//     }
+// }
+
+// static void task_wifi_connect(void *pt){
+//     while(1){
+//         if(globalData.flag_wifi_connect == 0 && globalData.flag_ble_busy == 0){
+//             check_wifi_connect();
+//         }
+//         vTaskDelay(1000 * 60);   // try to connect wifi per minute
+//     }
+// }
+
+// static void task_weather(void *pt){
+//     while(1){
+//         if(check_wifi_connect() == 1 && globalData.flag_ble_busy == 0){  
+//             Serial.println("task weather");
+//             update_weather_data();
+//         }
+//         vTaskDelay(1000 * 60);  // 每小时更新一次
+//     }
+// }

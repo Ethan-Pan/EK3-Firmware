@@ -63,9 +63,18 @@ void led_breath(){
   // 将呼吸效果的值映射到0-255范围
   uint8_t brightness = map(breath, 0, 255, 0, 255);
   
+// 将16进制字符串转换为RGB值
+  char color[7];
+  strncpy(color, gJsonData.color + 1, 6); // 跳过#号
+  color[6] = '\0';
+  long rgb = strtol(color, NULL, 16);
+  uint8_t r = (rgb >> 16) & 0xFF;
+  uint8_t g = (rgb >> 8) & 0xFF; 
+  uint8_t b = rgb & 0xFF;
+
   // 设置所有LED的颜色和亮度
   for(int i = 0; i < NUM_LEDS; i++) {
-    leds[i] = CRGB::Blue;
+    leds[i] = CRGB(r, g, b);
     leds[i].fadeToBlackBy(255 - brightness);
   }
   
@@ -74,7 +83,17 @@ void led_breath(){
 }
 
 void led_stay(){
-  fill_solid(leds, NUM_LEDS, CRGB::Blue);
+  // 解析颜色字符串,格式为 #RRGGBB
+  char color[7];
+  strncpy(color, gJsonData.color + 1, 6); // 跳过#号
+  color[6] = '\0';
+  
+  // 将16进制字符串转换为RGB值
+  long rgb = strtol(color, NULL, 16);
+  uint8_t r = (rgb >> 16) & 0xFF;
+  uint8_t g = (rgb >> 8) & 0xFF; 
+  uint8_t b = rgb & 0xFF;
+  fill_solid(leds, NUM_LEDS, CRGB(r, g, b));
   FastLED.setBrightness(BRIGHTNESS); 
   FastLED.show();
 }

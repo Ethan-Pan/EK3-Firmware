@@ -156,7 +156,6 @@ void ui_event_scrLight(lv_event_t * e);
 lv_obj_t * ui_scrLight;
 lv_obj_t * ui_Panel8;
 lv_obj_t * ui_Panel5;
-void ui_event_PalLightSetting(lv_event_t * e);
 lv_obj_t * ui_PalLightSetting;
 lv_obj_t * ui_Image16;
 lv_obj_t * ui_Label20;
@@ -205,7 +204,7 @@ void ui_scrMusic_screen_init(void);
 void ui_event_scrMusic(lv_event_t * e);
 lv_obj_t * ui_scrMusic;
 lv_obj_t * ui_imgLastMusic;
-lv_obj_t * ui_imgNexMusic;
+lv_obj_t * ui_imgNextMusic;
 lv_obj_t * ui_imgStartMusic;
 lv_obj_t * ui_imgEndMusic;
 lv_obj_t * ui_labMusicHour;
@@ -298,11 +297,11 @@ void ui_event_scrWatch1(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_scrMenu, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, &ui_scrMenu_screen_init);
+        _ui_screen_change(&ui_scrMenu, LV_SCR_LOAD_ANIM_MOVE_LEFT, 50, 0, &ui_scrMenu_screen_init);
     }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_TOP) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_scrWatch2, LV_SCR_LOAD_ANIM_MOVE_TOP, 200, 0, &ui_scrWatch2_screen_init);
+        _ui_screen_change(&ui_scrWatch2, LV_SCR_LOAD_ANIM_MOVE_TOP, 50, 0, &ui_scrWatch2_screen_init);
     }
 }
 void ui_event_scrWatch2(lv_event_t * e)
@@ -311,11 +310,11 @@ void ui_event_scrWatch2(lv_event_t * e)
     lv_obj_t * target = lv_event_get_target(e);
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_LEFT) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_scrMenu, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, &ui_scrMenu_screen_init);
+        _ui_screen_change(&ui_scrMenu, LV_SCR_LOAD_ANIM_MOVE_LEFT, 50, 0, &ui_scrMenu_screen_init);
     }
     if(event_code == LV_EVENT_GESTURE &&  lv_indev_get_gesture_dir(lv_indev_get_act()) == LV_DIR_BOTTOM) {
         lv_indev_wait_release(lv_indev_get_act());
-        _ui_screen_change(&ui_scrWatch1, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 200, 0, &ui_scrWatch1_screen_init);
+        _ui_screen_change(&ui_scrWatch1, LV_SCR_LOAD_ANIM_MOVE_BOTTOM, 50, 0, &ui_scrWatch1_screen_init);
     }
 }
 void ui_event_scrWeather(lv_event_t * e)
@@ -419,14 +418,7 @@ void ui_event_scrLight(lv_event_t * e)
         _ui_screen_change(&ui_scrMenu, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 50, 0, &ui_scrMenu_screen_init);
     }
 }
-void ui_event_PalLightSetting(lv_event_t * e)
-{
-    lv_event_code_t event_code = lv_event_get_code(e);
-    lv_obj_t * target = lv_event_get_target(e);
-    if(event_code == LV_EVENT_CLICKED) {
-        _ui_screen_change(&ui_scrLight, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_scrLight_screen_init);
-    }
-}
+
 void ui_event_scrUpdate(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);

@@ -13,6 +13,9 @@
 #include "finger/finger.h"
 #include "encoder/encoder.h"
 #include "display/display.h"
+#include "bluetooth/bluetooth.h"
+#include "keyboard/keyboard.h"
+#include "wifi/wifi.h"
 
 extern void task_init(void);
 

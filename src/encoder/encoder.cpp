@@ -25,6 +25,7 @@ int64_t read_encoder_count(){
     return count;
 }
 
+
 // 定义中断服务函数
 void IRAM_ATTR encoderISR() {
     // 在中断中不进行复杂操作，只设置一个标志

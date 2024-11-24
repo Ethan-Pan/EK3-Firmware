@@ -34,7 +34,7 @@ const char *g_connect_json = "{"
     "\"weather_temp_min\": 15,"
     "\"weather_hum\": 68,"
     "\"weather_type\": 0,"
-    "\"time_hour\": 19,"
+    "\"time_hour\": 12,"
     "\"time_min\": 45,"
     "\"time_sec\": 45,"
     "\"date_week\": 3,"
@@ -48,18 +48,21 @@ JsonDataStru gJsonData = {0};
 
 static void read_json(void);
 static void upDate_json(void);
+static void update_weather_data(char* receiveData);
 void config_update(void);
 
 
 void config_init(){
   preferences.begin("ek3", false);  // create a flash area named ek3
   globalData.flag_config = config_check();
-  Serial.printf("flag_config: %d\n", globalData.flag_config);
+  if(globalData.flag_config == 1){  
+      read_json();
+      Serial.printf("flag_config: %d\n", globalData.flag_config);
+      load_config();
+  }
 }
 
 void config_update(){
-  read_json();
-  load_config();
   upDate_json();
 }
 
@@ -110,7 +113,7 @@ static void load_config(){
     String location = preferences.getString("location", "");
     strncpy(gJsonData.location, location.c_str(), sizeof(gJsonData.location)-1);
     gJsonData.location[sizeof(gJsonData.location)-1] = '\0';  
-    /* load power_show  */
+    /* load power_show  */ 
     gJsonData.power_show = preferences.getInt("power_show", 0);
     /* load encoder */
     gJsonData.encoder = preferences.getInt("encoder", 0);
@@ -119,13 +122,23 @@ static void load_config(){
     strncpy(gJsonData.color, color.c_str(), sizeof(gJsonData.color)-1);
     gJsonData.color[sizeof(gJsonData.color)-1] = '\0';  
     /* load power_save_start */
-    String power_save_start = preferences.getString("power_save_start", "");
+    String power_save_start = preferences.getString("power_save_st", "");
     strncpy(gJsonData.power_save_start, power_save_start.c_str(), sizeof(gJsonData.power_save_start)-1);
     gJsonData.power_save_start[sizeof(gJsonData.power_save_start)-1] = '\0';  
+    char hour_str[3] = {0};
+    char min_str[3] = {0};
+    strncpy(hour_str, gJsonData.power_save_start, 2);
+    strncpy(min_str, gJsonData.power_save_start + 3, 2);
+    gJsonData.power_start_hour = atoi(hour_str);
+    gJsonData.power_start_min = atoi(min_str);
     /* load power_save_end */
     String power_save_end = preferences.getString("power_save_end", "");
     strncpy(gJsonData.power_save_end, power_save_end.c_str(), sizeof(gJsonData.power_save_end)-1);
     gJsonData.power_save_end[sizeof(gJsonData.power_save_end)-1] = '\0';  
+    strncpy(hour_str, gJsonData.power_save_end, 2);
+    strncpy(min_str, gJsonData.power_save_end + 3, 2);
+    gJsonData.power_end_hour = atoi(hour_str);
+    gJsonData.power_end_min = atoi(min_str);
     /* load power_deep_save  */
     gJsonData.power_deep_save = preferences.getInt("power_deep_save", 0);
     /* load finger_pin */
@@ -166,6 +179,9 @@ static void upDate_json(){
 }
 
 void update_time(){
+  globalData.cur_time_hour = gJsonData.time_hour;
+  globalData.cur_time_min = gJsonData.time_min;
+  globalData.cur_time_sec = gJsonData.time_sec;
   gSecAngle = globalData.cur_time_sec * 60;
   gMinAngle = globalData.cur_time_min * 60 + globalData.cur_time_sec;
   gHourAngle = (globalData.cur_time_hour - 12) * 300 + globalData.cur_time_min * 5;
@@ -175,10 +191,13 @@ void update_time(){
   char time_str[3];
   sprintf(time_str, "%02d", globalData.cur_time_min);
   lv_label_set_text(ui_labTimeMin, time_str);
+  lv_label_set_text(ui_labMusicMin, time_str);
   sprintf(time_str, "%01d", globalData.cur_time_hour%10);
   lv_label_set_text(ui_labTimeHour1, time_str);
   sprintf(time_str, "%01d", globalData.cur_time_hour/10);
   lv_label_set_text(ui_labTimeHour2, time_str);
+  sprintf(time_str, "%02d", globalData.cur_time_hour);
+  lv_label_set_text(ui_labMusicHour, time_str);
 }
 
 void update_date(){
@@ -217,6 +236,20 @@ void update_weather(){
   weather_str[2] = '%';
   weather_str[3] = '\0';
   lv_label_set_text(ui_labWeatherHum, weather_str);
+  int code = gJsonData.weather_type;
+  if(code >= 0 && code <= 3){
+    gJsonData.weather_type = 0;
+  }else if(code >= 4 && code <= 9){
+    gJsonData.weather_type = 1;
+  }else if(code >= 10 && code <= 20){
+    gJsonData.weather_type = 2;
+  }else if(code >= 21 && code <= 25){
+    gJsonData.weather_type = 3;
+  }else if(code >= 30 && code <= 32){
+    gJsonData.weather_type = 1;
+  }else{
+    gJsonData.weather_type = 4;
+  }
   /* weather type */
   switch (gJsonData.weather_type)
   {
@@ -331,6 +364,9 @@ void clear_config(){
  *             x-c for connect_flag
  *             x-d for wifi_ssid
  *             x-e for wifi_password
+ * flash quiry: r-#050$   s-$001#   s-001 for sunccess 
+ * esp restart: r-#060$   s-$001#   s-001 for sunccess 
+ * ble address: r-#070$   s-$001#   s-001 for sunccess 
  * config clr: r-#090$   s-$001#   s-001 for sunccess 
  *  
  */
@@ -417,6 +453,19 @@ void serialEvent() {
           memset(receivedString, 0, sizeof(char)*512);
           Serial.printf("$001#");
           break;
+        case '7':
+          /* get ble address */
+          memset(receivedString, 0, sizeof(char)*512);
+          char bleAddress[18];
+          get_ble_address(bleAddress);
+          Serial.printf("BLE Address:%s", bleAddress);
+          break;
+        case '8':
+          /* get weather data */
+          update_weather_data(receivedString);
+          memset(receivedString, 0, sizeof(char)*512);
+          Serial.printf("$001#");
+          break;
         case '9':
           /* clear config */
           clear_config();
@@ -429,7 +478,6 @@ void serialEvent() {
       }
     }
 }
-
 void config_query(){
     /* print user name */
     Serial.println("用户名: " + String(gJsonData.user_name));
@@ -462,6 +510,52 @@ void config_query(){
     /* print wifi password */
     Serial.println("WiFi密码: " + String(gJsonData.wifi_password));
 }
+
+
+static void update_weather_data(char* receiveData){
+    char* str_copy = strndup(receiveData + 2, strlen(receiveData + 2) - 1);  // 创建字符串副本，从第三个字符开始，不包含最后一个字符$
+    char* token;
+    int numbers[20] = {0};  // 存储提取的数字
+    int count = 0;
+
+    // 跳过第一个#
+    token = strchr(str_copy, '#');
+    if(token != NULL) {
+        token++; // 移到#后面的字符
+        
+        while(*token != '\0' && count < 20) {
+            if(isdigit(*token)) {
+                char numStr[10] = {0};
+                int i = 0;
+                // 收集连续的数字
+                while(isdigit(*token)) {
+                    numStr[i++] = *token++;
+                }
+                numbers[count++] = atoi(numStr);
+            } else {
+                token++; // 跳过非数字字符(如#)
+            }
+        }
+    }
+
+    free(str_copy);  // 释放内存
+    gJsonData.temp_cur = numbers[0];
+    gJsonData.weather_hum = numbers[1];
+    gJsonData.weather_type = numbers[2];
+    gJsonData.temp_max = numbers[3];
+    gJsonData.temp_min = numbers[4];
+    gJsonData.date_month = numbers[5];
+    gJsonData.date_day = numbers[6];
+    gJsonData.date_week = numbers[7];
+    gJsonData.time_hour = numbers[8];
+    gJsonData.time_min = numbers[9];
+    gJsonData.time_sec = numbers[10];
+
+    update_weather();
+    update_time();
+    update_date();
+}
+
 
 void update_config(char* receiveData, int length){
   switch (receiveData[3]){

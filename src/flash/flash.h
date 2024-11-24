@@ -10,6 +10,8 @@
 #include "ui.h"
 #include "ui_helpers.h"
 #include "ui_events.h"
+#include "bluetooth/bluetooth.h"
+#include "keyboard/keyboard.h"
 
 
 
@@ -42,6 +44,10 @@ typedef struct {
     char color[10];
     char power_save_start[10];
     char power_save_end[10];
+    int power_start_hour;
+    int power_start_min;
+    int power_end_hour;
+    int power_end_min;
     int power_deep_save;
     char finger_pin[30];
     int x_mode;
@@ -58,5 +64,8 @@ extern void serialEvent(void);
 extern int config_check(void);
 extern void clear_config(void);
 extern void config_update(void);
+extern void update_time(void);
+extern void update_date(void);
+extern void update_weather(void);
 
 #endif
