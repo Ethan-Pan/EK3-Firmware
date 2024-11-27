@@ -16,6 +16,7 @@
 #include "bluetooth/bluetooth.h"
 #include "keyboard/keyboard.h"
 #include "wifi/wifi.h"
+#include "connect/connect.h"
 
 extern void task_init(void);
 

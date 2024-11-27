@@ -131,6 +131,7 @@ void ui_scrUpdate_screen_init(void)
     lv_obj_set_align(ui_panelCheckUpdate, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_panelCheckUpdate, LV_FLEX_FLOW_ROW_WRAP);
     lv_obj_set_flex_align(ui_panelCheckUpdate, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_add_flag(ui_panelCheckUpdate, LV_OBJ_FLAG_HIDDEN);     /// Flags
     lv_obj_clear_flag(ui_panelCheckUpdate, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(ui_panelCheckUpdate, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_panelCheckUpdate, lv_color_hex(0x4D4B4B), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -158,25 +159,24 @@ void ui_scrUpdate_screen_init(void)
     lv_obj_set_style_arc_opa(ui_spinUpdate, 255, LV_PART_INDICATOR | LV_STATE_DEFAULT);
     lv_obj_set_style_arc_width(ui_spinUpdate, 5, LV_PART_INDICATOR | LV_STATE_DEFAULT);
 
-    ui_panelNoWifi = lv_obj_create(ui_scrUpdate);
-    lv_obj_set_width(ui_panelNoWifi, 146);
-    lv_obj_set_height(ui_panelNoWifi, 96);
-    lv_obj_set_align(ui_panelNoWifi, LV_ALIGN_CENTER);
-    lv_obj_set_flex_flow(ui_panelNoWifi, LV_FLEX_FLOW_ROW_WRAP);
-    lv_obj_set_flex_align(ui_panelNoWifi, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_add_flag(ui_panelNoWifi, LV_OBJ_FLAG_HIDDEN);     /// Flags
-    lv_obj_clear_flag(ui_panelNoWifi, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
-    lv_obj_set_style_radius(ui_panelNoWifi, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_color(ui_panelNoWifi, lv_color_hex(0x4D4B4B), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_bg_opa(ui_panelNoWifi, 200, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_panelNoConnect = lv_obj_create(ui_scrUpdate);
+    lv_obj_set_width(ui_panelNoConnect, 146);
+    lv_obj_set_height(ui_panelNoConnect, 96);
+    lv_obj_set_align(ui_panelNoConnect, LV_ALIGN_CENTER);
+    lv_obj_set_flex_flow(ui_panelNoConnect, LV_FLEX_FLOW_ROW_WRAP);
+    lv_obj_set_flex_align(ui_panelNoConnect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_panelNoConnect, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_set_style_radius(ui_panelNoConnect, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_color(ui_panelNoConnect, lv_color_hex(0x4D4B4B), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_bg_opa(ui_panelNoConnect, 200, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_labUpdate6 = lv_label_create(ui_panelNoWifi);
+    ui_labUpdate6 = lv_label_create(ui_panelNoConnect);
     lv_obj_set_width(ui_labUpdate6, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_labUpdate6, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_x(ui_labUpdate6, -7);
     lv_obj_set_y(ui_labUpdate6, -4);
     lv_obj_set_align(ui_labUpdate6, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_labUpdate6, "请在WIFI模式\n   检测更新");
+    lv_label_set_text(ui_labUpdate6, " 请在设备连接\n状态下检测更新");
     lv_obj_set_style_text_font(ui_labUpdate6, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_scrUpdate, ui_event_scrUpdate, LV_EVENT_ALL, NULL);

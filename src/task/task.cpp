@@ -27,9 +27,8 @@ static void task_power(void *pt);
 static void task_finger(void *pt);
 static void task_encoder(void *pt);
 static void task_uart(void *pt);
-// static void task_clock(void *pt);
-// static void task_wifi_connect(void *pt);
-// static void task_weather(void *pt);
+static void task_weather_update(void *pt);
+static void task_connect_state(void *pt);
 static void task_music(void *pt);
 static void ui_config_init(void);
 
@@ -46,11 +45,8 @@ void task_init(){
     xTaskCreate(task_encoder, "task_encoder", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_uart, "task_uart", 1024*4, NULL, 1, NULL);
     xTaskCreate(task_music, "task_music", 1024*4, NULL, 1, NULL);
-    // if(gJsonData.connect_flag == 1){    //  connect mode is wifi
-    //     xTaskCreate(task_clock, "task_clock", 1024*4, NULL, 1, NULL);
-    //     xTaskCreate(task_wifi_connect, "task_wifi_connect", 1024*4, NULL, 1, NULL);
-    //     xTaskCreate(task_weather, "task_weather", 1024*4, NULL, 1, NULL);
-    // }
+    xTaskCreate(task_weather_update, "task_weather_update", 1024*4, NULL, 1, NULL);
+    // xTaskCreate(task_connect_state, "task_connect_state", 1024*4, NULL, 1, NULL);
     ui_config_init();
 }
 
@@ -170,18 +166,19 @@ static void task_watch(void *pt){
             isInPowerSaveTime = true;
         }
 
-        // if(isInPowerSaveTime) {
-        //     Serial.printf("Deep Sleep MODE\n");
-            // led_close();
-            // turnOffScreen();
-            // esp_deep_sleep_start(); 
-            // // 计算当前时间到power_end的时间差(以分钟为单位)
-            // int wakeupMinutes = 0;
-            // wakeupMinutes = (24 - globalData.cur_time_hour + gJsonData.power_end_hour) * 60 + 
-            //                    (gJsonData.power_end_min - globalData.cur_time_min);
-            // // 设置定时器唤醒时间(转换为微秒)
-            // esp_sleep_enable_timer_wakeup(wakeupMinutes * 60 * 1000000ULL);
-        // }
+        // 开机之后10分钟进入深度休眠
+        if(isInPowerSaveTime && (millis() - globalData.time_switch_on) >= 1000 * 60 * 10) {
+            Serial.printf("Deep Sleep MODE\n");
+            led_close();
+            turnOffScreen();
+            esp_deep_sleep_start(); 
+            // 计算当前时间到power_end的时间差(以分钟为单位)
+            int wakeupMinutes = 0;
+            wakeupMinutes = (24 - globalData.cur_time_hour + gJsonData.power_end_hour) * 60 + 
+                               (gJsonData.power_end_min - globalData.cur_time_min);
+            // 设置定时器唤醒时间(转换为微秒)
+            esp_sleep_enable_timer_wakeup(wakeupMinutes * 60 * 1000000ULL);
+        }
         lv_img_set_angle(ui_sec, gSecAngle);
         lv_img_set_angle(ui_sec_dot, gSecAngle);
         vTaskDelay(50);
@@ -482,7 +479,6 @@ static void task_encoder(void *pt){
                     if(gJsonData.connect_flag == 2){
                         ble_send_string(BLE_ROTATE_RIGHT);
                     }
-                    // Serial.printf("ENCORDER RIGHT: %d\n", count);   
                 }
                 else if(count < globalData.encoder_last_count){
                     if(gJsonData.connect_flag == 1){
@@ -491,7 +487,6 @@ static void task_encoder(void *pt){
                     if(gJsonData.connect_flag == 2){
                         ble_send_string(BLE_ROTATE_LEFT);
                     }
-                    // Serial.printf("ENCORDER LEFT: %d\n", count);
                 }
             }
             globalData.encoder_last_count = count;  
@@ -576,33 +571,38 @@ static void task_music(void *pt){
     }
 }
 
-// static void task_clock(void *pt){
-//     while(1){
-//         if(check_wifi_connect() == 1 && globalData.flag_ble_busy == 0){
-//             Serial.println("task clock");
-//             update_clock();
-//             update_date();
-//             update_time();
-//         }
-//         vTaskDelay(1000 * 60 * 60);  // 每小时更新一次
-//     }
-// }
+static void task_weather_update(void *pt){
+    while(1){
+        if(gJsonData.connect_flag == 1){
+            if(globalData.weather_update_state == 0){
+                globalData.weather_update_time = 2;
+                send_weather_update();
+            }else{
+                globalData.weather_update_time = 60 * 60;
+                send_weather_update();
+            }
+        }
+        vTaskDelay(1000 * globalData.weather_update_time);
+    }
+}
 
-// static void task_wifi_connect(void *pt){
-//     while(1){
-//         if(globalData.flag_wifi_connect == 0 && globalData.flag_ble_busy == 0){
-//             check_wifi_connect();
-//         }
-//         vTaskDelay(1000 * 60);   // try to connect wifi per minute
-//     }
-// }
+static void task_version_update(void *pt){
+    while(1){
+        if(gJsonData.update_flag == 1 && gJsonData.connect_flag == 1){
+            send_version();
+            if(globalData.flag_firmware_update == 1){
+                send_update_start();
+            }
+        }
+        vTaskDelay(1000 * 10);
+    }
+}
 
-// static void task_weather(void *pt){
-//     while(1){
-//         if(check_wifi_connect() == 1 && globalData.flag_ble_busy == 0){  
-//             Serial.println("task weather");
-//             update_weather_data();
-//         }
-//         vTaskDelay(1000 * 60);  // 每小时更新一次
-//     }
-// }
+static void task_connect_state(void *pt){
+    while(1){
+        if(gJsonData.connect_flag == 1){
+            send_check_connect();
+        }
+        vTaskDelay(1000 * 10);
+    }
+}

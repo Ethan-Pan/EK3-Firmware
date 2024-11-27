@@ -28,6 +28,7 @@ typedef struct {
     int flag_config;
     int flag_wifi_connect;
     int flag_ble_busy;
+    int flag_firmware_update;    
     /* fingers ID */
     int finger_count;
     /* power */
@@ -41,10 +42,17 @@ typedef struct {
     int led_mode;
     /* time */
     unsigned long time_finger_touch;
+    unsigned long time_switch_on;
     /* encoder */
     int encoder_last_count;
     /* music */
     int music_state;
+    /* version */
+    char firmware_cur_version[5];   
+    char firmware_new_version[5];
+    /* weater */
+    int weather_update_state;
+    int weather_update_time;
 } GlobalDataStru;
 
 extern GlobalDataStru globalData;

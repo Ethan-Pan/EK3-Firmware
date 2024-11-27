@@ -464,6 +464,7 @@ void serialEvent() {
           /* get weather data */
           update_weather_data(receivedString);
           memset(receivedString, 0, sizeof(char)*512);
+          globalData.weather_update_state = 1;
           Serial.printf("$001#");
           break;
         case '9':
@@ -471,8 +472,21 @@ void serialEvent() {
           clear_config();
           memset(receivedString, 0, sizeof(char)*512);
           Serial.printf("$001#");
+          ESP.restart();
           break;
-        
+        case 'a':
+          /* firmware update */
+          if(receivedString[3] == '1'){
+            globalData.flag_firmware_update = 1;
+            strncpy(globalData.firmware_new_version, &receivedString[4], count-5);
+            globalData.firmware_new_version[count-5] = '\0'; 
+          }
+          else{
+            globalData.flag_firmware_update = 0;
+          }
+          memset(receivedString, 0, sizeof(char)*512);
+          Serial.printf("$001#");
+          break;
         default:
           break;
       }

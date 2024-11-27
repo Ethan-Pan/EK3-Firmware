@@ -199,7 +199,7 @@ extern lv_obj_t * ui_labCancel;
 extern lv_obj_t * ui_panelCheckUpdate;
 extern lv_obj_t * ui_labUpdate1;
 extern lv_obj_t * ui_spinUpdate;
-extern lv_obj_t * ui_panelNoWifi;
+extern lv_obj_t * ui_panelNoConnect;
 extern lv_obj_t * ui_labUpdate6;
 // SCREEN: ui_scrMusic
 void ui_scrMusic_screen_init(void);
@@ -298,4 +298,4 @@ void ui_init(void);
 } /*extern "C"*/
 #endif
 
-#endif
+#endif  // _SQUARELINE_PROJECT_UI_H

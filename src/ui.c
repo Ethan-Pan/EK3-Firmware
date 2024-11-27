@@ -195,7 +195,7 @@ lv_obj_t * ui_labCancel;
 lv_obj_t * ui_panelCheckUpdate;
 lv_obj_t * ui_labUpdate1;
 lv_obj_t * ui_spinUpdate;
-lv_obj_t * ui_panelNoWifi;
+lv_obj_t * ui_panelNoConnect;
 lv_obj_t * ui_labUpdate6;
 
 
@@ -268,6 +268,8 @@ void ui_event_scrOpen(lv_event_t * e)
                 2000,  // 2秒后开始动画
                 NULL
             );
+            lv_obj_clear_flag(ui_scrOpen, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_add_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN);
         }
     }
 }

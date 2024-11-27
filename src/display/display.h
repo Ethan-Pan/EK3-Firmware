@@ -8,6 +8,7 @@
 #include <CST816S.h>
 #include <Ticker.h>
 #include <driver/ledc.h>
+#include "flash/flash.h"
 
 extern void dis_init(void);
 extern void turnOffScreen();

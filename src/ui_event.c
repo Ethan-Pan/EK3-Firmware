@@ -172,3 +172,15 @@ static void ui_event_scr_music_click(lv_event_t *e){
         }
     }
 }
+
+/* firmware update event */
+static void ui_event_scr_firmware_update_loaded(lv_event_t *e){
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t * target = lv_event_get_target(e);
+    if(event_code == LV_EVENT_SCREEN_LOADED){
+        if(globalData.flag_firmware_update == 1){
+            // lv_obj_add_flag(, LV_OBJ_FLAG_HIDDEN);
+            // lv_obj_clear_flag(, LV_OBJ_FLAG_HIDDEN);
+        }
+    }
+}
