@@ -131,7 +131,6 @@ void ui_scrUpdate_screen_init(void)
     lv_obj_set_align(ui_panelCheckUpdate, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_panelCheckUpdate, LV_FLEX_FLOW_ROW_WRAP);
     lv_obj_set_flex_align(ui_panelCheckUpdate, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
-    lv_obj_add_flag(ui_panelCheckUpdate, LV_OBJ_FLAG_HIDDEN);     /// Flags
     lv_obj_clear_flag(ui_panelCheckUpdate, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
     lv_obj_set_style_radius(ui_panelCheckUpdate, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_panelCheckUpdate, lv_color_hex(0x4D4B4B), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -166,6 +165,7 @@ void ui_scrUpdate_screen_init(void)
     lv_obj_set_flex_flow(ui_panelNoConnect, LV_FLEX_FLOW_ROW_WRAP);
     lv_obj_set_flex_align(ui_panelNoConnect, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
     lv_obj_clear_flag(ui_panelNoConnect, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+    lv_obj_add_flag(ui_panelNoConnect, LV_OBJ_FLAG_HIDDEN);     /// Flags
     lv_obj_set_style_radius(ui_panelNoConnect, 20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_color(ui_panelNoConnect, lv_color_hex(0x4D4B4B), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_bg_opa(ui_panelNoConnect, 200, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -176,7 +176,7 @@ void ui_scrUpdate_screen_init(void)
     lv_obj_set_x(ui_labUpdate6, -7);
     lv_obj_set_y(ui_labUpdate6, -4);
     lv_obj_set_align(ui_labUpdate6, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_labUpdate6, " 请在设备连接\n状态下检测更新");
+    lv_label_set_text(ui_labUpdate6, "请在屏幕关闭后\n长按开关键5s");
     lv_obj_set_style_text_font(ui_labUpdate6, &ui_font_chinese, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     lv_obj_add_event_cb(ui_scrUpdate, ui_event_scrUpdate, LV_EVENT_ALL, NULL);

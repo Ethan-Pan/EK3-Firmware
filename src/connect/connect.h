@@ -12,6 +12,7 @@ extern void send_weather_update(void);
 extern void send_version(void);
 extern void send_update_start(void);
 extern void send_check_connect(void);
+extern void send_update_download(void);
 
 
 #endif

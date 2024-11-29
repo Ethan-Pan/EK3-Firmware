@@ -28,6 +28,11 @@ void send_update_start(void){
     Serial.printf("AT+UPDATE=1");
 }
 
+/* 串口发送指令开启下载 */
+void send_update_download(void){
+    Serial.printf("AT+DOWNLOAD=1");
+}
+
 /* 串口发送指令检查连接状态 */
 void send_check_connect(void){
     Serial.printf("AT+CONNECT=1");

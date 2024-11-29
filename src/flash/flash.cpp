@@ -155,14 +155,14 @@ static void load_config(){
     gJsonData.update_flag = preferences.getInt("update_flag", 0);
     /* load connect_flag */
     gJsonData.connect_flag = preferences.getInt("connect_flag", 0);
-    /* load wifi_ssid */ 
-    String wifi_ssid = preferences.getString("wifi_ssid", "");
-    strncpy(gJsonData.wifi_ssid, wifi_ssid.c_str(), sizeof(gJsonData.wifi_ssid)-1);
-    gJsonData.wifi_ssid[sizeof(gJsonData.wifi_ssid)-1] = '\0';  
-    /* load wifi_password */
-    String wifi_password = preferences.getString("wifi_password", "");
-    strncpy(gJsonData.wifi_password, wifi_password.c_str(), sizeof(gJsonData.wifi_password)-1);
-    gJsonData.wifi_password[sizeof(gJsonData.wifi_password)-1] = '\0';  
+    // /* load wifi_ssid */ 
+    // String wifi_ssid = preferences.getString("wifi_ssid", "");
+    // strncpy(gJsonData.wifi_ssid, wifi_ssid.c_str(), sizeof(gJsonData.wifi_ssid)-1);
+    // gJsonData.wifi_ssid[sizeof(gJsonData.wifi_ssid)-1] = '\0';  
+    // /* load wifi_password */
+    // String wifi_password = preferences.getString("wifi_password", "");
+    // strncpy(gJsonData.wifi_password, wifi_password.c_str(), sizeof(gJsonData.wifi_password)-1);
+    // gJsonData.wifi_password[sizeof(gJsonData.wifi_password)-1] = '\0';  
 }
 
 static void upDate_json(){
@@ -481,8 +481,14 @@ void serialEvent() {
             strncpy(globalData.firmware_new_version, &receivedString[4], count-5);
             globalData.firmware_new_version[count-5] = '\0'; 
           }
-          else{
+          else if(receivedString[3] == '0'){
             globalData.flag_firmware_update = 0;
+          }
+          else if(receivedString[3] == '2'){
+            globalData.ota_download_state = 2;    // download success
+          }
+          else if(receivedString[3] == '3'){
+            globalData.ota_download_state = 3;    // download error
           }
           memset(receivedString, 0, sizeof(char)*512);
           Serial.printf("$001#");

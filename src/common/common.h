@@ -29,6 +29,8 @@ typedef struct {
     int flag_wifi_connect;
     int flag_ble_busy;
     int flag_firmware_update;    
+    int flag_update_scr_loaded;
+    int flag_update_confirm;
     /* fingers ID */
     int finger_count;
     /* power */
@@ -53,6 +55,9 @@ typedef struct {
     /* weater */
     int weather_update_state;
     int weather_update_time;
+    /* ota */
+    int ota_download_state;
+    
 } GlobalDataStru;
 
 extern GlobalDataStru globalData;
