@@ -20,6 +20,8 @@
 #define BLE_PREV "$226#"
 #define BLE_PLAY "$227#"
 #define BLE_PAUSE "$228#"
+#define BLE_KEY_UP "$229#"
+#define BLE_KEY_DOWN "$230#"
 
 extern void ble_init(void);
 extern int ble_send_string(const char* str);

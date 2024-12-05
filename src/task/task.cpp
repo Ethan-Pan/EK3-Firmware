@@ -487,7 +487,13 @@ static void task_encoder(void *pt){
                         }
                     }
                     if(gJsonData.connect_flag == 2){
-                        ble_send_string(BLE_ROTATE_RIGHT);
+                        if(gJsonData.encoder == 0){
+                            ble_send_string(BLE_ROTATE_RIGHT);
+                        }
+                        else if(gJsonData.encoder == 1){
+                            ble_send_string(BLE_KEY_DOWN);
+                        }
+                        
                     }
                 }
                 else if(count < globalData.encoder_last_count){
@@ -500,7 +506,13 @@ static void task_encoder(void *pt){
                         }
                     }
                     if(gJsonData.connect_flag == 2){
-                        ble_send_string(BLE_ROTATE_LEFT);
+                        if(gJsonData.encoder == 0){
+                            ble_send_string(BLE_ROTATE_LEFT);
+                        }
+                        else if (gJsonData.encoder == 1)
+                        {
+                            ble_send_string(BLE_KEY_DOWN);
+                        }
                     }
                 }
             }
@@ -670,3 +682,4 @@ static void task_version_auto_update(void *pt){
         }
     }
 }
+

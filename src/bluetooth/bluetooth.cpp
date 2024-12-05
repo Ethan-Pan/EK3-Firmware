@@ -87,6 +87,8 @@ void ble_init() {
  * prev: s-$226#
  * play: s-$227#
  * pause: s-$228#
+ * key up: s-$229#
+ * key down: s-$230#
 */
 int ble_send_string(const char* str) {
     if (!deviceConnected || !pCharacteristic) {

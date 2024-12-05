@@ -340,6 +340,7 @@ int config_check(){
 /* Clear config */
 void clear_config(){
   preferences.putInt("init_flag", 0);
+  preferences.clear();
 }
 
 /*
@@ -386,8 +387,11 @@ void serialEvent() {
           /* pc connect */
           Serial.print("$001#");  
           memset(receivedString, 0, sizeof(char)*512);
-          lv_obj_add_flag(ui_labOpen, LV_OBJ_FLAG_HIDDEN);
-          lv_obj_clear_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN);
+          if(globalData.flag_first_connect == 0){
+            globalData.flag_first_connect = 1;
+            lv_obj_add_flag(ui_labOpen, LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN);
+          }
           break;
 
         case '1':

@@ -31,6 +31,7 @@ typedef struct {
     int flag_firmware_update;    
     int flag_update_scr_loaded;
     int flag_update_confirm;
+    int flag_first_connect;
     /* fingers ID */
     int finger_count;
     /* power */

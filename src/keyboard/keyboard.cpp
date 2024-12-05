@@ -1,6 +1,7 @@
 /**
  * This example turns the ESP32 into a Bluetooth LE keyboard that writes the words, presses Enter, presses a media key and then Ctrl+Alt+Delete
  */
+
 #include "keyboard.h"
 
 static void keyboard_X_write_single(char* key);
@@ -10,12 +11,16 @@ static BleKeyboard bleKeyboard;
 
 void ble_keyboard_init() {
   Serial.println("Starting BLE work!");
-  bleKeyboard.setName("Ehthan's EK3");
+  char name[50];
+  sprintf(name, "%s's EK3", gJsonData.user_name);
+  bleKeyboard.setName(name);
   bleKeyboard.begin();
 }
 
 void keyboard_finger() {
     if(bleKeyboard.isConnected()) {
+        bleKeyboard.write(KEY_ESC);
+        delay(1000);
         bleKeyboard.print(gJsonData.finger_pin);
         bleKeyboard.write(KEY_RETURN);
     }

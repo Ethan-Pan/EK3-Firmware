@@ -268,8 +268,14 @@ void ui_event_scrOpen(lv_event_t * e)
                 2000,  // 2秒后开始动画
                 NULL
             );
-            lv_obj_clear_flag(ui_scrOpen, LV_OBJ_FLAG_HIDDEN);
-            lv_obj_add_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN);
+            if(globalData.flag_first_connect == 1){
+                lv_obj_add_flag(ui_labOpen, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_clear_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN);
+            }else{
+                lv_obj_clear_flag(ui_scrOpen, LV_OBJ_FLAG_HIDDEN);
+                lv_obj_add_flag(ui_pannelOpen, LV_OBJ_FLAG_HIDDEN); 
+            }
+            
         }
     }
 }
